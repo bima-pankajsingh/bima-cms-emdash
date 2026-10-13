@@ -1,0 +1,5 @@
+# Fonts and the vendored brand assets never change in place: a new version gets a new path.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable

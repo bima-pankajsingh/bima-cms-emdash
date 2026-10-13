@@ -1,5 +1,7 @@
 ---
 import { DOCUMENTS, isProductionHost, type Locale } from "../lib/legal";
+// Self-hosted, inlined: no third-party connection before text can render in its own face.
+import fontFaces from "../styles/fonts.css?raw";
 
 interface Props {
 	title: string;
@@ -38,14 +40,10 @@ const t = lang === "ur"
 		<link rel="icon" type="image/png" sizes="32x32" href={`${UI}/favicon-32x32.png`} />
 		<link rel="icon" type="image/png" sizes="16x16" href={`${UI}/favicon-16x16.png`} />
 		<link rel="apple-touch-icon" href={`${UI}/apple-touch-icon.png`} />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			rel="stylesheet"
-			href={lang === "ur"
-				? "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Quicksand:wght@600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
-				: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Quicksand:wght@600;700&display=swap"}
-		/>
+		<link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/quicksand-latin.woff2" as="font" type="font/woff2" crossorigin />
+		{lang === "ur" && <link rel="preload" href="/fonts/noto-nastaliq-urdu-arabic.woff2" as="font" type="font/woff2" crossorigin />}
+		<style is:inline set:html={fontFaces}></style>
 		<style is:global>
 			/* BIMA tokens (ui.milvik.io v2.1.0) in the faces bimamilvik.com sets them in:
 			   Quicksand for display, Manrope for reading. */

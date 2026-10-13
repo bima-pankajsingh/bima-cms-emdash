@@ -1,0 +1,7 @@
+Manrope (c) The Manrope Project Authors (https://github.com/sharanda/manrope)
+Quicksand (c) The Quicksand Project Authors (https://github.com/andrew-paglinawan/QuicksandFamily)
+Noto Nastaliq Urdu (c) Google LLC (https://github.com/notofonts/nastaliq-urdu)
+
+These fonts are licensed under the SIL Open Font License, Version 1.1:
+https://openfontlicense.org/open-font-license-official-text/
+They are redistributed here unmodified, as served by Google Fonts.
