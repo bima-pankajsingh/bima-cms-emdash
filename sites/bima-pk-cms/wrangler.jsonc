@@ -22,6 +22,7 @@
 			// covers /_emdash/*.
 			"workers_dev": false,
 			"preview_urls": false,
+			"routes": [{ "pattern": "cdn-pk-stg.milvik.app", "custom_domain": true }],
 			"d1_databases": [
 				{ "binding": "DB", "database_name": "bima-cms-stg", "database_id": "fac66ce5-946c-48c8-b7b0-6b06978f5dc3" }
 			],
