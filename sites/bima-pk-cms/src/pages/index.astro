@@ -4,10 +4,14 @@ import { DOCUMENTS } from "../lib/legal";
 ---
 
 <Legal title="Documents" lang="en">
-	<h1 style="font:600 1.6rem/1.2 'Source Serif 4',Georgia,serif;margin:0 0 12px">BIMA Pakistan</h1>
-	<ul>
-		{Object.entries(DOCUMENTS).map(([slug, d]) => (
-			<li><a href={`/pk/${slug}`}>{d.label.en}</a> · <a href={`/ur/pk/${slug}`} lang="ur">{d.label.ur}</a></li>
-		))}
-	</ul>
+	<div class="bima-card">
+		<div class="bima-card__header"><h1 class="bima-card__title">BIMA Pakistan</h1></div>
+		<div class="bima-card__body">
+			<ul>
+				{Object.entries(DOCUMENTS).map(([slug, d]) => (
+					<li><a href={`/pk/${slug}`}>{d.label.en}</a> · <a href={`/ur/pk/${slug}`} lang="ur">{d.label.ur}</a></li>
+				))}
+			</ul>
+		</div>
+	</div>
 </Legal>

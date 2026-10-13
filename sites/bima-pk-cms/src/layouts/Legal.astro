@@ -5,11 +5,15 @@ interface Props {
 	title: string;
 	lang: "en" | "ur";
 	description?: string;
+	/** The same page in the other language, for the switch in the header. */
+	alternate?: { href: string; lang: "en" | "ur" };
 }
 
-const { title, lang, description } = Astro.props;
+const { title, lang, description, alternate } = Astro.props;
 const dir = lang === "ur" ? "rtl" : "ltr";
 const noindex = !isProductionHost(Astro.url);
+// The BIMA design system (ui.milvik.io), vendored at a pinned version - see public/vendor/bima-ui.
+const UI = "/vendor/bima-ui/2.1.0";
 ---
 
 <!doctype html>
@@ -20,64 +24,46 @@ const noindex = !isProductionHost(Astro.url);
 		<title>{title} — BIMA Pakistan</title>
 		{description && <meta name="description" content={description} />}
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600&display=swap"
-		/>
+		<link rel="icon" type="image/png" sizes="32x32" href={`${UI}/favicon-32x32.png`} />
+		<link rel="icon" type="image/png" sizes="16x16" href={`${UI}/favicon-16x16.png`} />
+		<link rel="apple-touch-icon" href={`${UI}/apple-touch-icon.png`} />
+		<link rel="stylesheet" href={`${UI}/bima.css`} />
+		{lang === "ur" && (
+			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" />
+		)}
 		<style is:global>
-			:root {
-				--ground: #f7f8fa;
-				--paper: #ffffff;
-				--ink: #17202b;
-				--muted: #5b6676;
-				--rule: #e1e5eb;
-				--accent: #0b6e66;
-				--draft-ground: #fff4d6;
-				--draft-ink: #6b4a00;
-				--draft-rule: #e9c46a;
-				--quote: #eef4f3;
+			/* BIMA UI is a light, left-to-right system; only what it lacks is added here. */
+			/* .bima-container already carries the side gutter; it only needs border-box so its
+			   width: 100% plus padding stays inside the screen. */
+			.legal-shell { box-sizing: border-box; padding-block: 16px 48px; display: flex; flex-direction: column; gap: 16px; }
+			.legal-shell *, .legal-shell *::before, .legal-shell *::after { box-sizing: border-box; }
+			.legal-nav { padding: 12px 20px; }
+			.legal-nav img { display: block; }
+			.legal-nav__lang { color: var(--bima-text-inverse); font-weight: var(--bima-font-semibold); text-decoration: none; }
+			.legal-nav__lang:hover, .legal-nav__lang:focus-visible { text-decoration: underline; }
+			html[lang="ur"] body, html[lang="ur"] h1, html[lang="ur"] h2, html[lang="ur"] h3 {
+				font-family: "Noto Nastaliq Urdu", var(--bima-font-body);
 			}
-			@media (prefers-color-scheme: dark) {
-				:root {
-					--ground: #0f141a;
-					--paper: #161d25;
-					--ink: #e6eaef;
-					--muted: #9aa5b3;
-					--rule: #2a3440;
-					--accent: #5cc2b8;
-					--draft-ground: #3a2e10;
-					--draft-ink: #f3d68b;
-					--draft-rule: #8a6d22;
-					--quote: #1b2a2c;
-				}
-			}
-			* { box-sizing: border-box; }
-			html { -webkit-text-size-adjust: 100%; }
-			body {
-				margin: 0;
-				background: var(--ground);
-				color: var(--ink);
-				font: 400 1.0625rem/1.65 "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
-				padding-inline: 16px;
-			}
-			html[lang="ur"] body {
-				font-family: "Noto Nastaliq Urdu", "Source Sans 3", serif;
-				line-height: 2.2;
-			}
-			main {
-				max-width: 42rem;
-				margin: 0 auto;
-				padding-block: 24px 48px;
-			}
-			a { color: var(--accent); }
-			a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+			html[lang="ur"] body { line-height: 2.2; }
+			[dir="rtl"] ul, [dir="rtl"] ol { padding-left: 0; padding-right: var(--bima-space-6); }
+			[dir="rtl"] blockquote { padding-left: 0; border-left: 0; padding-right: var(--bima-space-4); border-right: 3px solid var(--bima-border-strong); }
 		</style>
 	</head>
 	<body>
-		<main>
-			<slot />
-		</main>
+		<div class="bima-container bima-container--md legal-shell">
+			<nav class="bima-navbar legal-nav" aria-label="BIMA Pakistan">
+				<a class="bima-navbar__brand" href={lang === "ur" ? "/ur/pk/about" : "/pk/about"}>
+					<img src={`${UI}/logo-white.png`} height="28" alt="BIMA" />
+				</a>
+				{alternate && (
+					<a class="legal-nav__lang" href={alternate.href} lang={alternate.lang} hreflang={alternate.lang}>
+						{alternate.lang === "ur" ? "اردو" : "English"}
+					</a>
+				)}
+			</nav>
+			<main>
+				<slot />
+			</main>
+		</div>
 	</body>
 </html>

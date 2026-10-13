@@ -1,0 +1,3700 @@
+/*! BIMA UI v2.1.0 | MIT License | https://github.com/milvik-bima/bima-ui-framework */
+
+/* ========== tokens/variables.css ========== */
+/**
+ * BIMA Design System — Design Tokens (CSS Custom Properties)
+ * ───────────────────────────────────────────────────────────────────────────
+ * The single source of truth for the BIMA visual language. Every colour, font,
+ * size, radius, shadow, and motion value in the framework resolves to one of the
+ * `--bima-*` custom properties defined here.
+ *
+ * The values are derived directly from the live BIMA brand (bima-global-website):
+ *   • Navy / Blue / Sky / Mist palette
+ *   • Inter (body/headings/nav)
+ *   • Generously rounded corners (1.25rem cards, 1.875rem shells)
+ *   • Large, soft, navy-tinted shadows
+ *   • Pill CTAs with a circular arrow affordance
+ *
+ * Override any token in your own :root to re-theme the entire system at once.
+ *
+ * For Tailwind: map these into tailwind.config theme.extend.
+ * For Ant/MUI : map these into the theme token overrides.
+ * For plain CSS: use directly as var(--bima-*).
+ */
+
+/* ─── Font Faces ───────────────────────────────────────────────────────────────
+   Inter (weights 300–700) — the single typeface for body, headings, UI, and code
+   fallbacks. Source: Google Fonts. Consumed via @import so dist/bima.css is
+   self-contained and every page inherits it without extra tags. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ─── Brand colours ─────────────────────────────────────────────────────────
+     The core BIMA palette. Navy is the anchor (headers, primary actions),
+     Sky is the friendly accent (CTAs, focus, highlights), Mist is the calm
+     neutral surface. Trust comes from restraint — these five do most of the work. */
+  --bima-navy:        #0A2261;   /* primary brand — headers, primary buttons        */
+  --bima-navy-hover:  #082365;   /* primary hover / brand link                       */
+  --bima-navy-deep:   #061845;   /* deepest navy — gradients, pressed states         */
+  --bima-navy-soft:   #203868;   /* navy ink — long-form body text on the brand site */
+
+  --bima-blue:        #325CA8;   /* secondary brand — accents, links, info           */
+  --bima-blue-hover:  #416CBA;   /* secondary hover                                  */
+  --bima-blue-dark:   #2F579F;   /* secondary pressed                                */
+  --bima-blue-light:  #5291D8;   /* lighter accent                                   */
+  --bima-blue-tint:   #CEE0F4;   /* faint blue wash                                  */
+
+  --bima-sky:         #97CCE7;   /* accent — CTA pills, focus ring, highlights       */
+  --bima-sky-light:   #AEE2F7;   /* lighter sky (brand secondary sky)                */
+  --bima-sky-muted:   #D5EFF9;   /* faint sky wash                                   */
+
+  --bima-ink:         #18181C;   /* near-black — densest text, tooltips              */
+  --bima-mist:        #F4F5F7;   /* calm neutral surface — page bg, soft cards       */
+
+  /* ─── Interactive roles ──────────────────────────────────────────────────────
+     Semantic aliases so components reference intent, not a raw colour. */
+  --bima-interactive-primary:         var(--bima-navy);
+  --bima-interactive-primary-hover:   var(--bima-navy-hover);
+  --bima-interactive-secondary:       var(--bima-blue);
+  --bima-interactive-secondary-hover: var(--bima-blue-hover);
+  --bima-interactive-accent:          var(--bima-sky);
+  --bima-interactive-focus:           var(--bima-sky);
+
+  /* ─── Surfaces ───────────────────────────────────────────────────────────────
+     Backgrounds, layered from page → card → input → overlay. */
+  --bima-surface-page:           #F4F5F7;
+  --bima-surface-subtle:         #FBFCFD;   /* slightly off-white for nested panels  */
+  --bima-surface-card:           #FFFFFF;
+  --bima-surface-muted:          #F4F5F7;   /* mist card (brand .bima-card surface)   */
+  --bima-surface-overlay:        rgba(10, 24, 46, 0.55);
+  --bima-surface-nav:            var(--bima-navy);
+  --bima-surface-input:          #FFFFFF;
+  --bima-surface-input-filled:   #EBF0F7;   /* completed / verified field tint (BIMA registration flow) */
+  --bima-surface-input-disabled: #F1F4F8;
+
+  /* ─── Text ───────────────────────────────────────────────────────────────────
+     Primary → secondary → muted → disabled, plus inverse + links. */
+  --bima-text-primary:    #18181C;
+  --bima-text-secondary:  #404655;
+  --bima-text-muted:      #4F5D73;   /* AA (5.6:1) on Mist — clear and readable */
+  --bima-text-inverse:    #FFFFFF;
+  --bima-text-on-navy:    rgba(255, 255, 255, 0.82);   /* body text on navy surfaces  */
+  --bima-text-link:       var(--bima-blue);
+  --bima-text-link-hover: var(--bima-navy);
+  --bima-text-disabled:   #9AA3AE;
+
+  /* ─── Borders ────────────────────────────────────────────────────────────────*/
+  --bima-border-default: #E4E9F0;
+  --bima-border-strong:  #CBD5E0;
+  --bima-border-subtle:  #EDF1F6;
+  --bima-border-focus:   var(--bima-sky);
+  --bima-border-error:   #EF4444;
+
+  /* ─── Interaction states ──────────────────────────────────────────────────────
+     Semantic hover / selected backgrounds — reference these instead of one-off
+     rgba() values so behaviour stays consistent across components.   */
+  --bima-state-hover:           #F1F4F8;   /* neutral hover (ghost btn, list rows)   */
+  --bima-state-hover-strong:    #E7ECF3;   /* pressed / active press                 */
+  --bima-state-selected:        #EAF0FA;   /* selected nav item, secondary-btn hover */
+  --bima-state-selected-text:   var(--bima-blue);
+  --bima-row-hover:             #F8FAFC;   /* table row hover (subtler than -hover)  */
+
+  /* ─── Semantic status ──────────────────────────────────────────────────────────
+     Three roles per status:
+       *        → solid fill / icon / indicator dot (use on white or as a fill)
+       *-bg     → tinted surface behind text (badges, alerts)
+       *-text   → text/icon colour ON the tint. AA-compliant (≥4.5:1) on its -bg.
+     Always pair  background:*-bg  with  color:*-text  — never *-bg with *.       */
+  --bima-success:       #1BB792;
+  --bima-success-dark:  #0F7A5A;
+  --bima-success-bg:    #E6FAF6;
+  --bima-success-text:  #0F7A5A;   /* 5.3:1 on success-bg */
+  --bima-warning:       #FA8C16;
+  --bima-warning-dark:  #B45309;
+  --bima-warning-bg:    #FFF7E6;
+  --bima-warning-text:  #B45309;   /* 4.8:1 on warning-bg */
+  --bima-error:         #EF4444;
+  --bima-error-dark:    #DC2626;
+  --bima-error-bg:      #FEF2F2;
+  --bima-error-text:    #B91C1C;   /* 5.9:1 on error-bg */
+  --bima-info:          var(--bima-blue);
+  --bima-info-dark:     #1E4E8C;
+  --bima-info-bg:       #EBF5FB;
+  --bima-info-text:     #1E4E8C;   /* 5.6:1 on info-bg */
+  --bima-neutral:       #5E6B7B;
+  --bima-neutral-bg:    #F1F4F8;
+  --bima-neutral-text:  #475467;   /* 6.4:1 on neutral-bg */
+
+  /* ─── Channel colours (Messaging / multi-channel products) ──────────────────── */
+  --bima-channel-whatsapp: #1EA952;
+  --bima-channel-email:    var(--bima-blue);
+  --bima-channel-sms:      #7C3AED;
+  --bima-channel-telegram: #0EA5E9;
+  --bima-channel-slack:    #D4268D;
+
+  /* ─── Gradients ────────────────────────────────────────────────────────────────
+     The brand hero gradient (navy → blue → sky) and a subtle brand wash. */
+  --bima-gradient-hero:  linear-gradient(135deg, #0A2261 0%, #325CA8 58%, #97CCE7 100%);
+  --bima-gradient-navy:  linear-gradient(160deg, #0A2261 0%, #061845 100%);
+  --bima-gradient-brand: linear-gradient(135deg, #325CA8 0%, #97CCE7 100%);
+  --bima-gradient-sky:   linear-gradient(135deg, #AEE2F7 0%, #97CCE7 100%);
+
+  /* ─── Typography ─────────────────────────────────────────────────────────────
+     Inter is the single typeface — display, headings, body, nav, sidebar,
+     labels, buttons. JetBrains Mono for code. Each stack carries a fallback
+     ladder: the webfont first, then native system fonts by platform, then a
+     generic, so text always renders even if the webfont fails to load.
+
+     ── Font FAMILIES (raw typefaces; re-theme by overriding these) ──        */
+   /* --bima-font-family-display:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   --bima-font-family-body:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; */
+
+   --bima-font-family-display:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   --bima-font-family-body:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   --bima-font-family-mono:      'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ── Semantic ROLE tokens (which family each role uses) ─────────────────── */
+  --bima-font-display:    var(--bima-font-family-display);   /* hero / big display     */
+  --bima-font-heading:    var(--bima-font-family-display);   /* h1–h6, section titles  */
+  --bima-font-heading-sub:var(--bima-font-family-display);   /* subheadings / subtext  */
+  --bima-font-body:       var(--bima-font-family-body);      /* paragraphs / default    */
+  --bima-font-label:      var(--bima-font-family-body);      /* form labels, small text */
+  --bima-font-nav:        var(--bima-font-family-body);      /* header / navbar links   */
+  --bima-font-sidebar:    var(--bima-font-family-body);      /* sidebar nav items       */
+  --bima-font-button:     var(--bima-font-family-body); /* buttons                 */
+  --bima-font-tab:        var(--bima-font-family-body); /* tab headers             */
+  --bima-font-section:    var(--bima-font-family-body); /* list / section titlebars*/
+  --bima-font-mono:       var(--bima-font-family-mono);      /* code                    */
+
+  /* Type scale */
+  --bima-text-display:   clamp(2.75rem, 5vw, 4rem);   /* hero display — fluid        */
+  --bima-text-h1:        2.5rem;    /* 40px */
+  --bima-text-h2:        2rem;      /* 32px */
+  --bima-text-h3:        1.5rem;    /* 24px */
+  --bima-text-h4:        1.25rem;   /* 20px */
+  --bima-text-h5:        1.125rem;  /* 18px */
+  --bima-text-h6:        1rem;      /* 16px */
+  --bima-text-large:     1.125rem;  /* 18px */
+  --bima-text-base:      1rem;      /* 16px */
+  --bima-text-small:     0.875rem;  /* 14px */
+  --bima-text-caption:   0.75rem;   /* 12px */
+  --bima-text-label:     0.8125rem; /* 13px — compact UI labels (dailyobjects body) */
+
+  --bima-font-light:    300;
+  --bima-font-regular:  400;
+  --bima-font-medium:   500;
+  --bima-font-semibold: 600;
+  --bima-font-bold:     700;
+
+  --bima-leading-tight:   1.25;
+  --bima-leading-snug:    1.4;
+  --bima-leading-normal:  1.6;
+  --bima-leading-relaxed: 1.7;
+
+  --bima-tracking-tight:  -0.025em;
+  --bima-tracking-normal: -0.01em;
+  --bima-tracking-wide:   0.06em;
+
+  /* ─── Spacing (4px base) ─────────────────────────────────────────────────────*/
+  --bima-space-0:  0;
+  --bima-space-1:  0.25rem;   /* 4px   */
+  --bima-space-2:  0.5rem;    /* 8px   */
+  --bima-space-3:  0.75rem;   /* 12px  */
+  --bima-space-4:  1rem;      /* 16px  */
+  --bima-space-5:  1.25rem;   /* 20px  */
+  --bima-space-6:  1.5rem;    /* 24px  */
+  --bima-space-7:  1.75rem;   /* 28px  */
+  --bima-space-8:  2rem;      /* 32px  */
+  --bima-space-10: 2.5rem;    /* 40px  */
+  --bima-space-12: 3rem;      /* 48px  */
+  --bima-space-16: 4rem;      /* 64px  */
+  --bima-space-20: 5rem;      /* 80px  */
+  --bima-space-24: 6rem;      /* 96px  */
+  --bima-space-32: 8rem;      /* 128px */
+
+  /* ─── Border radius ────────────────────────────────────────────────────────────
+     BIMA reads as friendly + trustworthy through generous rounding.
+     `bima` (1.25rem) is the signature card radius; `shell` (1.875rem) wraps the
+     floating header/footer shells. */
+  --bima-radius-sm:    0.375rem;  /* 6px   — small chips, code              */
+  --bima-radius-md:    0.625rem;  /* 10px  — inputs, buttons                */
+  --bima-radius-lg:    0.875rem;  /* 14px  — dropdowns, small cards         */
+  --bima-radius-xl:    1.25rem;   /* 20px  — cards (brand "rounded-bima")   */
+  --bima-radius-2xl:   1.5rem;    /* 24px  — modals, large cards            */
+  --bima-radius-bima:  1.25rem;   /* 20px  — explicit brand card radius     */
+  --bima-radius-shell: 1.875rem;  /* 30px  — floating header / footer shell */
+  --bima-radius-pill:  2.5rem;    /* 40px  — brand CTA pill                 */
+  --bima-radius-full:  9999px;    /* badges, chips, avatars, switches       */
+
+  /* ─── Shadows ────────────────────────────────────────────────────────────────
+     Navy-tinted, soft, and lush — the BIMA "floating" look. The scale graduates
+     from barely-there (inputs) to the signature large soft card shadow. */
+  --bima-shadow-none:     none;
+  --bima-shadow-xs:       0 1px 2px rgba(8, 35, 101, 0.06);
+  --bima-shadow-sm:       0 2px 8px rgba(8, 35, 101, 0.08);
+  --bima-shadow-soft:     0 6px 20px rgba(8, 35, 101, 0.08);
+  --bima-shadow-md:       0 10px 30px rgba(8, 35, 101, 0.10);
+  --bima-shadow-card:     0 18px 45px rgba(8, 35, 101, 0.12);  /* brand "soft"       */
+  --bima-shadow-lg:       0 18px 45px rgba(8, 35, 101, 0.12);
+  --bima-shadow-dropdown: 0 12px 32px rgba(8, 35, 101, 0.16);
+  --bima-shadow-modal:    0 24px 60px rgba(8, 35, 101, 0.22);
+  --bima-shadow-xl:       0 28px 70px rgba(8, 35, 101, 0.18);
+  --bima-shadow-nav:      0 8px 40px rgba(8, 35, 101, 0.35);
+
+  /* ─── Motion ─────────────────────────────────────────────────────────────────*/
+  --bima-duration-instant:  100ms;
+  --bima-duration-fast:     200ms;
+  --bima-duration-standard: 300ms;
+  --bima-duration-moderate: 400ms;
+  --bima-duration-slow:     550ms;
+
+  --bima-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --bima-ease-enter:    cubic-bezier(0, 0, 0.2, 1);
+  --bima-ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+  --bima-ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Z-index scale ──────────────────────────────────────────────────────────*/
+  --bima-z-base:     0;
+  --bima-z-raised:   10;
+  --bima-z-sticky:   20;
+  --bima-z-dropdown: 30;
+  --bima-z-header:   40;
+  --bima-z-backdrop: 50;
+  --bima-z-modal:    60;
+  --bima-z-popover:  65;
+  --bima-z-toast:    70;
+  --bima-z-tooltip:  80;
+
+  /* ─── Layout ─────────────────────────────────────────────────────────────────
+     Container widths mirror the brand shell system (96rem tight / 120rem wide). */
+  --bima-container-sm:    36rem;    /* 576px  */
+  --bima-container-md:    45rem;    /* 720px  */
+  --bima-container-lg:    60rem;    /* 960px  */
+  --bima-container-xl:    71.25rem; /* 1140px */
+  --bima-container-xxl:   82.5rem;  /* 1320px */
+  --bima-container-app:   87.5rem;  /* 1400px — application UIs        */
+  --bima-container-tight: 96rem;    /* 1536px — content pages          */
+  --bima-container-wide:  120rem;   /* 1920px — marketing              */
+
+  --bima-sidebar-width:        17.5rem;   /* 280px — default sidebar width          */
+  --bima-sidebar-icon:         4rem;      /* 64px  — collapsed icon rail            */
+  --bima-sidebar-mobile:       18rem;     /* 288px — mobile drawer width            */
+
+  /* ─── Sidebar (sidenav) ──────────────────────────────────────────────────────
+     One shared token surface every sidenav resolves to — the navy docs shell and
+     the light app shell both read these tokens, so structure, fonts, spacing and
+     interaction states stay consistent across the whole application. Override a
+     single token to re-theme every sidenav at once. */
+  --bima-sidebar-bg:              var(--bima-surface-card);                       /* light shell bg        */
+  --bima-sidebar-bg-gradient:     linear-gradient(180deg, var(--bima-navy) 0%, var(--bima-navy-deep) 100%); /* navy shell bg */
+  --bima-sidebar-border:          var(--bima-border-default);                     /* light shell border   */
+  --bima-sidebar-border-navy:     rgba(255,255,255,0.05);                         /* navy shell border    */
+  --bima-sidebar-padding-x:       var(--bima-space-4);
+  --bima-sidebar-padding-top:     var(--bima-space-4);
+  --bima-sidebar-padding-bottom:  var(--bima-space-6);
+  --bima-sidebar-shadow:          var(--bima-shadow-md);
+
+  /* Item (nav link / nav item) */
+  --bima-sidebar-item-font-family:  var(--bima-font-sidebar);
+  --bima-sidebar-item-font-size:    var(--bima-text-small);
+  --bima-sidebar-item-font-weight:  var(--bima-font-medium);
+  --bima-sidebar-item-line-height:  1.4;
+  --bima-sidebar-item-padding-y:    var(--bima-space-2);
+  --bima-sidebar-item-padding-x:    var(--bima-space-3);
+  --bima-sidebar-item-gap:          var(--bima-space-3);
+  --bima-sidebar-item-radius:       var(--bima-radius-md);
+  --bima-sidebar-item-color:        var(--bima-text-secondary);
+  --bima-sidebar-item-hover-bg:     var(--bima-state-hover);
+  --bima-sidebar-item-hover-color:  var(--bima-text-primary);
+  --bima-sidebar-item-active-bg:    var(--bima-state-selected);
+  --bima-sidebar-item-active-color: var(--bima-state-selected-text);
+  --bima-sidebar-item-active-font:  var(--bima-font-semibold);
+  --bima-sidebar-item-indicator:    var(--bima-blue);
+
+  /* Item — navy shell variant */
+  --bima-sidebar-item-color-navy:        var(--bima-text-on-navy);
+  --bima-sidebar-item-hover-bg-navy:     rgba(255,255,255,0.08);
+  --bima-sidebar-item-hover-color-navy:  var(--bima-text-inverse);
+  --bima-sidebar-item-active-bg-navy:    rgba(151,204,231,0.14);
+  --bima-sidebar-item-active-color-navy: var(--bima-sky);
+  --bima-sidebar-item-active-font-navy:  var(--bima-font-semibold);
+  --bima-sidebar-item-indicator-navy:    var(--bima-sky);
+
+  /* Label (section heading) */
+  --bima-sidebar-label-font-family: var(--bima-font-sidebar);
+  --bima-sidebar-label-font-size:   var(--bima-text-label);
+  --bima-sidebar-label-font-weight: var(--bima-font-bold);
+  --bima-sidebar-label-color:       var(--bima-text-muted);
+  --bima-sidebar-label-tracking:    var(--bima-tracking-wide);
+  --bima-sidebar-label-padding-y:   var(--bima-space-2);
+  --bima-sidebar-label-padding-x:   var(--bima-space-3);
+  --bima-sidebar-label-margin-b:    var(--bima-space-1);
+  --bima-sidebar-label-color-navy:  var(--bima-sky);
+
+  /* ─── Control sizes ─────────────────────────────────────────────────────────────
+     Canonical heights for interactive controls (buttons, inputs, selects). */
+  --bima-control-xs: 1.75rem;   /* 28px — extra compact: tight toolbars, inline actions   */
+  --bima-control-sm:  2rem;     /* 32px — compact: table rows, filter bars, toolbars */
+  --bima-control-md:  2.5rem;   /* 40px — DEFAULT for buttons, inputs, selects        */
+  --bima-control-lg:  3rem;     /* 48px — primary CTAs, touch-first / mobile forms    */
+
+  /* ─── Breakpoints (reference; used by media queries in the framework) ────────────
+     xs <36rem · sm ≥36rem · md ≥48rem · lg ≥64rem · xl ≥80rem · xxl ≥96rem */
+  --bima-bp-sm:  36rem;
+  --bima-bp-md:  48rem;
+  --bima-bp-lg:  64rem;
+  --bima-bp-xl:  80rem;
+  --bima-bp-xxl: 96rem;
+}
+
+/* ─── Dark mode overrides ──────────────────────────────────────────────────────
+   Add class="dark" (or data-bima-theme="dark") to <html>/<body> or any subtree. */
+.dark,
+[data-bima-theme="dark"] {
+  color-scheme: dark;
+
+  --bima-surface-page:           #0E1422;
+  --bima-surface-subtle:         #141B2C;
+  --bima-surface-card:           #1A2233;
+  --bima-surface-muted:          #141B2C;
+  --bima-surface-input:          #1A2233;
+  --bima-surface-input-filled:   #1E3155;
+  --bima-surface-input-disabled: #11182600;
+  --bima-surface-overlay:        rgba(3, 8, 18, 0.7);
+
+  --bima-text-primary:    #F8FAFC;
+  --bima-text-secondary:  #C3CCDA;
+  --bima-text-muted:      #94A3B8;
+  --bima-text-disabled:   #5A6678;
+  --bima-text-link:       var(--bima-sky);
+  --bima-text-link-hover: var(--bima-sky-light);
+
+  --bima-border-default: #2A3447;
+  --bima-border-strong:  #3A465C;
+  --bima-border-subtle:  #232C3D;
+
+  --bima-state-hover:        #222C3E;
+  --bima-state-hover-strong: #2A364B;
+  --bima-state-selected:     #1E3155;
+  --bima-row-hover:          #1F2838;
+
+  --bima-success-bg: #0E2A24;
+  --bima-warning-bg: #2E2310;
+  --bima-error-bg:   #2E1414;
+  --bima-info-bg:    #15233A;
+  --bima-neutral-bg: #1C2434;
+
+  /* Light-on-dark text for the semantic backgrounds above */
+  --bima-success-text:  #34D399;
+  --bima-warning-text:  #FBBF24;
+  --bima-error-text:    #F87171;
+  --bima-info-text:     #8AB8F0;
+  --bima-neutral-text:  #C3CCDA;
+
+  --bima-mist:       #1C2434;  /* calm neutral surface — code chips, soft cards */
+  --bima-sky-muted:  #16374B;  /* faint sky wash (dark)                          */
+
+  /* Brand colours stay constant in dark mode */
+}
+
+/* ─── Reduced motion ───────────────────────────────────────────────────────────*/
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Base element styling using BIMA tokens ─────────────────────────────────────
+   Minimal base; the full cross-browser reset lives in reboot.css. */
+body {
+  font-family: var(--bima-font-body);
+  font-size: var(--bima-text-base);
+  font-weight: var(--bima-font-regular);
+  line-height: var(--bima-leading-normal);
+  color: var(--bima-text-primary);
+  background-color: var(--bima-surface-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis-weight: optimizeLegibility;
+  font-optical-sizing: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--bima-font-heading);
+  font-weight: var(--bima-font-semibold);
+  line-height: var(--bima-leading-tight);
+  letter-spacing: var(--bima-tracking-tight);
+  color: var(--bima-navy);
+  text-wrap: pretty;
+}
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 { color: var(--bima-text-primary); }
+
+h1 { font-size: var(--bima-text-h1); font-weight: var(--bima-font-bold); line-height: 1.15; }
+h2 { font-size: var(--bima-text-h2); }
+h3 { font-size: var(--bima-text-h3); line-height: var(--bima-leading-snug); }
+h4 { font-size: var(--bima-text-h4); line-height: var(--bima-leading-snug); }
+h5 { font-size: var(--bima-text-h5); }
+h6 { font-size: var(--bima-text-h6); }
+
+a {
+  color: var(--bima-text-link);
+  text-decoration: none;
+}
+/* :where() drops the selector to zero specificity, so any component class that
+   declares text-decoration: none (buttons, nav, badges, cards, …) wins over the
+   hover underline — plain prose links still get the affordance. */
+:where(a):hover {
+  color: var(--bima-text-link-hover);
+  text-decoration: underline;
+}
+
+/* ─── Focus ring ──────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--bima-interactive-focus);
+  outline-offset: 2px;
+}
+
+/* ========== tokens/reboot.css ========== */
+/**
+ * BIMA Design System — Reboot
+ *
+ * A Bootstrap-style cross-browser element reset built entirely on BIMA tokens.
+ * Every value references a --bima-* custom property — no raw hex colours or
+ * arbitrary pixel values (1px border widths and layout primitives excepted).
+ *
+ * Load order: variables.css → reboot.css → component stylesheets
+ *
+ * NOTE: The following are intentionally OMITTED here because variables.css
+ * already defines them:
+ *   body (font, color, background-color)
+ *   h1–h4 (font-family, font-weight, line-height, color, font-size)
+ *   a / a:hover
+ *   :focus-visible
+ *   @media (prefers-reduced-motion)
+ */
+
+/* ─── Box-sizing ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ─── HTML root ──────────────────────────────────────────────────────────────── */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+/* ─── Body additions ─────────────────────────────────────────────────────────── */
+/* font-family, font-size, color, background-color set in variables.css */
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── Headings h5–h6 ─────────────────────────────────────────────────────────── */
+/* h1–h4 base styles (font-family, weight, line-height, color) live in variables.css */
+h5,
+h6 {
+  font-family: var(--bima-font-heading);
+  font-weight: var(--bima-font-medium);
+  line-height: var(--bima-leading-snug);
+  color: var(--bima-text-primary);
+}
+
+h5 { font-size: var(--bima-text-base);   }
+h6 { font-size: var(--bima-text-small);  }
+
+/* Uniform bottom margin for all headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--bima-space-3);
+}
+
+/* ─── Paragraph ─────────────────────────────────────────────────────────────── */
+p {
+  margin: 0 0 var(--bima-space-4);
+}
+
+/* ─── Lists ──────────────────────────────────────────────────────────────────── */
+ul,
+ol {
+  margin: 0 0 var(--bima-space-4);
+  padding-left: var(--bima-space-6);
+}
+
+/* Nested lists: no additional bottom margin */
+ul ul,
+ul ol,
+ol ul,
+ol ol {
+  margin-bottom: 0;
+}
+
+/* ─── Emphasis ───────────────────────────────────────────────────────────────── */
+b,
+strong {
+  font-weight: var(--bima-font-semibold);
+}
+
+/* ─── Small text ─────────────────────────────────────────────────────────────── */
+small {
+  font-size: var(--bima-text-caption);
+}
+
+/* ─── Mark / highlight ───────────────────────────────────────────────────────── */
+mark {
+  background-color: var(--bima-warning-bg);
+  color: var(--bima-warning-text);
+  padding: 0 0.2em;
+  border-radius: var(--bima-radius-sm);
+}
+
+/* ─── Code & monospace ───────────────────────────────────────────────────────── */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--bima-font-mono);
+  font-size: var(--bima-text-small);
+}
+
+code {
+  color: var(--bima-text-link);
+  background-color: var(--bima-mist);
+  padding: 0.1em 0.35em;
+  border-radius: var(--bima-radius-sm);
+}
+
+/* Inline code inside a pre block should not get the badge treatment */
+pre code {
+  color: inherit;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+pre {
+  display: block;
+  overflow: auto;
+  background-color: var(--bima-mist);
+  border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-md);
+  padding: var(--bima-space-4);
+  margin: 0 0 var(--bima-space-4);
+  color: var(--bima-text-primary);
+}
+
+kbd {
+  display: inline-block;
+  background-color: var(--bima-surface-input-disabled);
+  border: 1px solid var(--bima-border-strong);
+  border-radius: var(--bima-radius-sm);
+  padding: 0.1em 0.4em;
+  color: var(--bima-text-secondary);
+  line-height: var(--bima-leading-normal);
+}
+
+/* ─── Horizontal rule ────────────────────────────────────────────────────────── */
+hr {
+  border: 0;
+  border-top: 1px solid var(--bima-border-default);
+  margin: var(--bima-space-6) 0;
+  opacity: 1;
+}
+
+/* ─── Media elements ─────────────────────────────────────────────────────────── */
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  display: block;
+  vertical-align: middle;
+}
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+video {
+  display: block;
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────────── */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-weight: var(--bima-font-semibold);
+}
+
+td,
+th {
+  padding: var(--bima-space-2) var(--bima-space-3);
+  vertical-align: top;
+  border-bottom: 1px solid var(--bima-border-default);
+}
+
+/* ─── Figure ─────────────────────────────────────────────────────────────────── */
+figure {
+  margin: 0 0 var(--bima-space-4);
+}
+
+figcaption {
+  font-size: var(--bima-text-small);
+  color: var(--bima-text-muted);
+  margin-top: var(--bima-space-2);
+}
+
+/* ─── Blockquote ─────────────────────────────────────────────────────────────── */
+blockquote {
+  margin: 0 0 var(--bima-space-4);
+  padding-left: var(--bima-space-4);
+  border-left: 3px solid var(--bima-border-strong);
+  color: var(--bima-text-secondary);
+}
+
+/* ─── Form elements ──────────────────────────────────────────────────────────── */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+}
+
+/* Remove inner border and padding in Firefox */
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+textarea {
+  resize: vertical;
+  overflow: auto;
+}
+
+/* ─── Fieldset / legend ──────────────────────────────────────────────────────── */
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+legend {
+  font-weight: var(--bima-font-semibold);
+  font-size: var(--bima-text-base);
+  color: var(--bima-text-primary);
+  padding: 0;
+  margin-bottom: var(--bima-space-2);
+  width: 100%;
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────────── */
+label {
+  display: inline-block;
+  font-size: var(--bima-text-small);
+  font-weight: var(--bima-font-medium);
+  color: var(--bima-text-secondary);
+  margin-bottom: var(--bima-space-1);
+}
+
+/* ─── Details / summary ──────────────────────────────────────────────────────── */
+details {
+  display: block;
+}
+
+summary {
+  display: list-item;
+  cursor: pointer;
+  font-weight: var(--bima-font-medium);
+  color: var(--bima-text-primary);
+}
+
+/* ─── Address ────────────────────────────────────────────────────────────────── */
+address {
+  margin: 0 0 var(--bima-space-4);
+  font-style: normal;
+  line-height: var(--bima-leading-normal);
+}
+
+/* ─── Abbreviation ───────────────────────────────────────────────────────────── */
+abbr[title] {
+  text-decoration: underline dotted;
+  cursor: help;
+  text-decoration-skip-ink: none;
+}
+
+/* ─── Sub / superscript ──────────────────────────────────────────────────────── */
+sub,
+sup {
+  position: relative;
+  font-size: var(--bima-text-caption);
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+sub { bottom: -0.25em; }
+sup { top: -0.5em; }
+
+/* ─── Selection ──────────────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--bima-sky);
+  color: var(--bima-navy);
+}
+
+/* ─── Hidden attribute ───────────────────────────────────────────────────────── */
+[hidden] {
+  display: none !important;
+}
+
+/* ========== src/css/content.css ========== */
+/**
+ * BIMA Design System — Content Typography & Display Classes
+ *
+ * Semantic typography classes — display sizes, lead text, blockquotes,
+ * description lists, inline text helpers, image utilities, and figures.
+ * These sit on top of the reboot.css base styles.
+ */
+
+/* ===========================================================================
+   1. DISPLAY HEADINGS  (large marketing / hero headings)
+   =========================================================================== */
+.bima-display-1 {
+  font-family: var(--bima-font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: var(--bima-font-bold);
+  line-height: var(--bima-leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--bima-text-primary);
+}
+.bima-display-2 {
+  font-family: var(--bima-font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: var(--bima-font-bold);
+  line-height: var(--bima-leading-tight);
+  letter-spacing: -0.015em;
+  color: var(--bima-text-primary);
+}
+.bima-display-3 {
+  font-family: var(--bima-font-display);
+  font-size: clamp(1.75rem, 4vw, 3.5rem);
+  font-weight: var(--bima-font-semibold);
+  line-height: var(--bima-leading-tight);
+  color: var(--bima-text-primary);
+}
+.bima-display-4 {
+  font-family: var(--bima-font-display);
+  font-size: clamp(1.5rem, 3vw, 3rem);
+  font-weight: var(--bima-font-semibold);
+  line-height: var(--bima-leading-snug);
+  color: var(--bima-text-primary);
+}
+
+/* ===========================================================================
+   2. LEAD TEXT  (introductory paragraph)
+   =========================================================================== */
+.bima-lead {
+  font-size: var(--bima-text-large);
+  font-weight: var(--bima-font-regular);
+  line-height: var(--bima-leading-relaxed);
+  color: var(--bima-text-secondary);
+}
+
+/* ===========================================================================
+   3. INLINE TEXT ELEMENTS
+   =========================================================================== */
+.bima-mark {
+  background-color: var(--bima-warning-bg);
+  color: var(--bima-warning-text);
+  padding: 0.1em 0.3em;
+  border-radius: var(--bima-radius-sm);
+}
+
+.bima-small { font-size: var(--bima-text-caption); }
+.bima-initialism {
+  font-size: var(--bima-text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ===========================================================================
+   4. BLOCKQUOTE
+   =========================================================================== */
+.bima-blockquote {
+  margin: 0 0 var(--bima-space-4);
+  padding: var(--bima-space-4) var(--bima-space-6);
+  border-left: 4px solid var(--bima-blue);
+  background: var(--bima-surface-page);
+  border-radius: 0 var(--bima-radius-md) var(--bima-radius-md) 0;
+  font-size: var(--bima-text-large);
+  color: var(--bima-text-secondary);
+  line-height: var(--bima-leading-relaxed);
+}
+.bima-blockquote p:last-child { margin-bottom: 0; }
+
+.bima-blockquote-footer {
+  font-size: var(--bima-text-small);
+  color: var(--bima-text-muted);
+  margin-top: var(--bima-space-2);
+}
+.bima-blockquote-footer::before { content: "\2014\00A0"; }
+
+/* ===========================================================================
+   5. LISTS
+   =========================================================================== */
+.bima-list-unstyled {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.bima-list-inline {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.bima-list-inline-item {
+  display: inline-block;
+}
+.bima-list-inline-item:not(:last-child) {
+  margin-right: var(--bima-space-3);
+}
+
+/* ===========================================================================
+   6. DESCRIPTION LIST
+   =========================================================================== */
+.bima-dl-horizontal dt {
+  font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-primary);
+}
+.bima-dl-horizontal dd {
+  color: var(--bima-text-secondary);
+  margin-bottom: var(--bima-space-2);
+}
+@media (min-width: 48rem) {
+  .bima-dl-horizontal {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--bima-space-2) var(--bima-space-6);
+  }
+  .bima-dl-horizontal dt { align-self: start; }
+  .bima-dl-horizontal dd { margin: 0; }
+}
+
+/* ===========================================================================
+   7. IMAGES
+   =========================================================================== */
+.bima-img-fluid {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.bima-img-thumbnail {
+  max-width: 100%;
+  height: auto;
+  padding: var(--bima-space-1);
+  background-color: var(--bima-surface-card);
+  border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-md);
+  box-shadow: var(--bima-shadow-soft);
+}
+.bima-img-rounded { border-radius: var(--bima-radius-lg); }
+.bima-img-circle  { border-radius: var(--bima-radius-full); }
+.bima-img-cover   { object-fit: cover; width: 100%; height: 100%; }
+.bima-img-contain { object-fit: contain; width: 100%; height: 100%; }
+
+/* Float helpers for images */
+.bima-float-start { float: left  !important; }
+.bima-float-end   { float: right !important; }
+.bima-float-none  { float: none  !important; }
+
+/* ===========================================================================
+   8. FIGURE
+   =========================================================================== */
+.bima-figure {
+  display: inline-block;
+  margin: 0 0 var(--bima-space-4);
+}
+.bima-figure-img {
+  max-width: 100%;
+  line-height: 1;
+  border-radius: var(--bima-radius-md);
+  margin-bottom: var(--bima-space-2);
+}
+.bima-figure-caption {
+  font-size: var(--bima-text-small);
+  color: var(--bima-text-muted);
+  line-height: var(--bima-leading-normal);
+}
+
+/* ===========================================================================
+   9. TYPOGRAPHY UTILITIES
+   =========================================================================== */
+.bima-font-monospace { font-family: var(--bima-font-mono) !important; }
+.bima-fs-1  { font-size: var(--bima-text-h1)      !important; }
+.bima-fs-2  { font-size: var(--bima-text-h2)      !important; }
+.bima-fs-3  { font-size: var(--bima-text-h3)      !important; }
+.bima-fs-4  { font-size: var(--bima-text-h4)      !important; }
+.bima-fs-5  { font-size: var(--bima-text-large)   !important; }
+.bima-fs-6  { font-size: var(--bima-text-base)    !important; }
+
+.bima-lh-1        { line-height: 1              !important; }
+.bima-lh-sm       { line-height: var(--bima-leading-snug)    !important; }
+.bima-lh-base     { line-height: var(--bima-leading-normal)  !important; }
+.bima-lh-lg       { line-height: var(--bima-leading-relaxed) !important; }
+
+/* ===========================================================================
+   10. CODE BLOCKS
+   =========================================================================== */
+.bima-code-block {
+  display: block;
+  overflow-x: auto;
+  background: var(--bima-ink);
+  color: #e2e8f0;
+  border-radius: var(--bima-radius-lg);
+  padding: var(--bima-space-4) var(--bima-space-5);
+  font-family: var(--bima-font-mono);
+  font-size: var(--bima-text-small);
+  line-height: var(--bima-leading-relaxed);
+  tab-size: 2;
+}
+
+/* ========== src/css/grid.css ========== */
+/**
+ * BIMA Design System — Responsive Grid System
+ *
+ * 12-column flexbox grid with 6 breakpoints.
+ * Naming mirrors Bootstrap 5 but all prefixed `bima-` to prevent collisions.
+ *
+ * Breakpoints:
+ *   xs  — default (<36rem / <576px)
+ *   sm  — ≥36rem  (576px)
+ *   md  — ≥48rem  (768px)
+ *   lg  — ≥64rem  (1024px)
+ *   xl  — ≥80rem  (1280px)
+ *   xxl — ≥96rem  (1536px)
+ */
+
+/* ─── Gutter tokens ──────────────────────────────────────────────────────── */
+:root {
+  --bima-gutter-x: 1.5rem;
+  --bima-gutter-y: 0;
+}
+
+/* ─── Row ─────────────────────────────────────────────────────────────────── */
+.bima-row {
+  --bima-gutter-x: 1.5rem;
+  --bima-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1 * var(--bima-gutter-y));
+  margin-right: calc(-.5 * var(--bima-gutter-x));
+  margin-left: calc(-.5 * var(--bima-gutter-x));
+}
+.bima-row > * {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  padding-right: calc(var(--bima-gutter-x) * .5);
+  padding-left: calc(var(--bima-gutter-x) * .5);
+  margin-top: var(--bima-gutter-y);
+}
+
+/* ─── No-gutters ─────────────────────────────────────────────────────────── */
+.bima-row--no-gutters {
+  --bima-gutter-x: 0;
+  --bima-gutter-y: 0;
+}
+
+/* ─── Columns — default (xs, all widths) ─────────────────────────────────── */
+.bima-col        { flex: 1 0 0%; }
+.bima-col-auto   { flex: 0 0 auto; width: auto; }
+.bima-col-1      { flex: 0 0 auto; width:  8.333333%; }
+.bima-col-2      { flex: 0 0 auto; width: 16.666667%; }
+.bima-col-3      { flex: 0 0 auto; width: 25%; }
+.bima-col-4      { flex: 0 0 auto; width: 33.333333%; }
+.bima-col-5      { flex: 0 0 auto; width: 41.666667%; }
+.bima-col-6      { flex: 0 0 auto; width: 50%; }
+.bima-col-7      { flex: 0 0 auto; width: 58.333333%; }
+.bima-col-8      { flex: 0 0 auto; width: 66.666667%; }
+.bima-col-9      { flex: 0 0 auto; width: 75%; }
+.bima-col-10     { flex: 0 0 auto; width: 83.333333%; }
+.bima-col-11     { flex: 0 0 auto; width: 91.666667%; }
+.bima-col-12     { flex: 0 0 auto; width: 100%; }
+
+/* ─── Offsets ────────────────────────────────────────────────────────────── */
+.bima-offset-0  { margin-left: 0; }
+.bima-offset-1  { margin-left:  8.333333%; }
+.bima-offset-2  { margin-left: 16.666667%; }
+.bima-offset-3  { margin-left: 25%; }
+.bima-offset-4  { margin-left: 33.333333%; }
+.bima-offset-5  { margin-left: 41.666667%; }
+.bima-offset-6  { margin-left: 50%; }
+.bima-offset-7  { margin-left: 58.333333%; }
+.bima-offset-8  { margin-left: 66.666667%; }
+.bima-offset-9  { margin-left: 75%; }
+.bima-offset-10 { margin-left: 83.333333%; }
+.bima-offset-11 { margin-left: 91.666667%; }
+
+/* ─── Order ──────────────────────────────────────────────────────────────── */
+.bima-order-first { order: -1; }
+.bima-order-last  { order: 13; }
+.bima-order-0     { order: 0; }
+.bima-order-1     { order: 1; }
+.bima-order-2     { order: 2; }
+.bima-order-3     { order: 3; }
+.bima-order-4     { order: 4; }
+.bima-order-5     { order: 5; }
+
+/* ─── Gutters ────────────────────────────────────────────────────────────── */
+.bima-g-0  { --bima-gutter-x: 0;                        --bima-gutter-y: 0; }
+.bima-g-1  { --bima-gutter-x: var(--bima-space-1);      --bima-gutter-y: var(--bima-space-1); }
+.bima-g-2  { --bima-gutter-x: var(--bima-space-2);      --bima-gutter-y: var(--bima-space-2); }
+.bima-g-3  { --bima-gutter-x: var(--bima-space-3);      --bima-gutter-y: var(--bima-space-3); }
+.bima-g-4  { --bima-gutter-x: var(--bima-space-4);      --bima-gutter-y: var(--bima-space-4); }
+.bima-g-5  { --bima-gutter-x: var(--bima-space-6);      --bima-gutter-y: var(--bima-space-6); }
+.bima-gx-0 { --bima-gutter-x: 0; }
+.bima-gx-1 { --bima-gutter-x: var(--bima-space-1); }
+.bima-gx-2 { --bima-gutter-x: var(--bima-space-2); }
+.bima-gx-3 { --bima-gutter-x: var(--bima-space-3); }
+.bima-gx-4 { --bima-gutter-x: var(--bima-space-4); }
+.bima-gx-5 { --bima-gutter-x: var(--bima-space-6); }
+.bima-gy-0 { --bima-gutter-y: 0; }
+.bima-gy-1 { --bima-gutter-y: var(--bima-space-1); }
+.bima-gy-2 { --bima-gutter-y: var(--bima-space-2); }
+.bima-gy-3 { --bima-gutter-y: var(--bima-space-3); }
+.bima-gy-4 { --bima-gutter-y: var(--bima-space-4); }
+.bima-gy-5 { --bima-gutter-y: var(--bima-space-6); }
+
+/* ─── sm (≥576px / 36rem) ────────────────────────────────────────────────── */
+@media (min-width: 36rem) {
+  .bima-col-sm       { flex: 1 0 0%; }
+  .bima-col-sm-auto  { flex: 0 0 auto; width: auto; }
+  .bima-col-sm-1     { flex: 0 0 auto; width:  8.333333%; }
+  .bima-col-sm-2     { flex: 0 0 auto; width: 16.666667%; }
+  .bima-col-sm-3     { flex: 0 0 auto; width: 25%; }
+  .bima-col-sm-4     { flex: 0 0 auto; width: 33.333333%; }
+  .bima-col-sm-5     { flex: 0 0 auto; width: 41.666667%; }
+  .bima-col-sm-6     { flex: 0 0 auto; width: 50%; }
+  .bima-col-sm-7     { flex: 0 0 auto; width: 58.333333%; }
+  .bima-col-sm-8     { flex: 0 0 auto; width: 66.666667%; }
+  .bima-col-sm-9     { flex: 0 0 auto; width: 75%; }
+  .bima-col-sm-10    { flex: 0 0 auto; width: 83.333333%; }
+  .bima-col-sm-11    { flex: 0 0 auto; width: 91.666667%; }
+  .bima-col-sm-12    { flex: 0 0 auto; width: 100%; }
+  .bima-offset-sm-0  { margin-left: 0; }
+  .bima-offset-sm-1  { margin-left:  8.333333%; }
+  .bima-offset-sm-2  { margin-left: 16.666667%; }
+  .bima-offset-sm-3  { margin-left: 25%; }
+  .bima-offset-sm-4  { margin-left: 33.333333%; }
+  .bima-offset-sm-5  { margin-left: 41.666667%; }
+  .bima-offset-sm-6  { margin-left: 50%; }
+  .bima-offset-sm-7  { margin-left: 58.333333%; }
+  .bima-offset-sm-8  { margin-left: 66.666667%; }
+  .bima-offset-sm-9  { margin-left: 75%; }
+  .bima-offset-sm-10 { margin-left: 83.333333%; }
+  .bima-offset-sm-11 { margin-left: 91.666667%; }
+  .bima-order-sm-first { order: -1; }
+  .bima-order-sm-last  { order: 13; }
+  .bima-order-sm-0  { order: 0; }
+  .bima-order-sm-1  { order: 1; }
+  .bima-order-sm-2  { order: 2; }
+  .bima-order-sm-3  { order: 3; }
+  .bima-order-sm-4  { order: 4; }
+  .bima-order-sm-5  { order: 5; }
+  .bima-g-sm-0  { --bima-gutter-x: 0;                   --bima-gutter-y: 0; }
+  .bima-g-sm-1  { --bima-gutter-x: var(--bima-space-1); --bima-gutter-y: var(--bima-space-1); }
+  .bima-g-sm-2  { --bima-gutter-x: var(--bima-space-2); --bima-gutter-y: var(--bima-space-2); }
+  .bima-g-sm-3  { --bima-gutter-x: var(--bima-space-3); --bima-gutter-y: var(--bima-space-3); }
+  .bima-g-sm-4  { --bima-gutter-x: var(--bima-space-4); --bima-gutter-y: var(--bima-space-4); }
+  .bima-g-sm-5  { --bima-gutter-x: var(--bima-space-6); --bima-gutter-y: var(--bima-space-6); }
+}
+
+/* ─── md (≥768px / 48rem) ────────────────────────────────────────────────── */
+@media (min-width: 48rem) {
+  .bima-col-md       { flex: 1 0 0%; }
+  .bima-col-md-auto  { flex: 0 0 auto; width: auto; }
+  .bima-col-md-1     { flex: 0 0 auto; width:  8.333333%; }
+  .bima-col-md-2     { flex: 0 0 auto; width: 16.666667%; }
+  .bima-col-md-3     { flex: 0 0 auto; width: 25%; }
+  .bima-col-md-4     { flex: 0 0 auto; width: 33.333333%; }
+  .bima-col-md-5     { flex: 0 0 auto; width: 41.666667%; }
+  .bima-col-md-6     { flex: 0 0 auto; width: 50%; }
+  .bima-col-md-7     { flex: 0 0 auto; width: 58.333333%; }
+  .bima-col-md-8     { flex: 0 0 auto; width: 66.666667%; }
+  .bima-col-md-9     { flex: 0 0 auto; width: 75%; }
+  .bima-col-md-10    { flex: 0 0 auto; width: 83.333333%; }
+  .bima-col-md-11    { flex: 0 0 auto; width: 91.666667%; }
+  .bima-col-md-12    { flex: 0 0 auto; width: 100%; }
+  .bima-offset-md-0  { margin-left: 0; }
+  .bima-offset-md-1  { margin-left:  8.333333%; }
+  .bima-offset-md-2  { margin-left: 16.666667%; }
+  .bima-offset-md-3  { margin-left: 25%; }
+  .bima-offset-md-4  { margin-left: 33.333333%; }
+  .bima-offset-md-5  { margin-left: 41.666667%; }
+  .bima-offset-md-6  { margin-left: 50%; }
+  .bima-offset-md-7  { margin-left: 58.333333%; }
+  .bima-offset-md-8  { margin-left: 66.666667%; }
+  .bima-offset-md-9  { margin-left: 75%; }
+  .bima-offset-md-10 { margin-left: 83.333333%; }
+  .bima-offset-md-11 { margin-left: 91.666667%; }
+  .bima-order-md-first { order: -1; }
+  .bima-order-md-last  { order: 13; }
+  .bima-order-md-0  { order: 0; }
+  .bima-order-md-1  { order: 1; }
+  .bima-order-md-2  { order: 2; }
+  .bima-order-md-3  { order: 3; }
+  .bima-order-md-4  { order: 4; }
+  .bima-order-md-5  { order: 5; }
+  .bima-g-md-0  { --bima-gutter-x: 0;                   --bima-gutter-y: 0; }
+  .bima-g-md-1  { --bima-gutter-x: var(--bima-space-1); --bima-gutter-y: var(--bima-space-1); }
+  .bima-g-md-2  { --bima-gutter-x: var(--bima-space-2); --bima-gutter-y: var(--bima-space-2); }
+  .bima-g-md-3  { --bima-gutter-x: var(--bima-space-3); --bima-gutter-y: var(--bima-space-3); }
+  .bima-g-md-4  { --bima-gutter-x: var(--bima-space-4); --bima-gutter-y: var(--bima-space-4); }
+  .bima-g-md-5  { --bima-gutter-x: var(--bima-space-6); --bima-gutter-y: var(--bima-space-6); }
+}
+
+/* ─── lg (≥1024px / 64rem) ───────────────────────────────────────────────── */
+@media (min-width: 64rem) {
+  .bima-col-lg       { flex: 1 0 0%; }
+  .bima-col-lg-auto  { flex: 0 0 auto; width: auto; }
+  .bima-col-lg-1     { flex: 0 0 auto; width:  8.333333%; }
+  .bima-col-lg-2     { flex: 0 0 auto; width: 16.666667%; }
+  .bima-col-lg-3     { flex: 0 0 auto; width: 25%; }
+  .bima-col-lg-4     { flex: 0 0 auto; width: 33.333333%; }
+  .bima-col-lg-5     { flex: 0 0 auto; width: 41.666667%; }
+  .bima-col-lg-6     { flex: 0 0 auto; width: 50%; }
+  .bima-col-lg-7     { flex: 0 0 auto; width: 58.333333%; }
+  .bima-col-lg-8     { flex: 0 0 auto; width: 66.666667%; }
+  .bima-col-lg-9     { flex: 0 0 auto; width: 75%; }
+  .bima-col-lg-10    { flex: 0 0 auto; width: 83.333333%; }
+  .bima-col-lg-11    { flex: 0 0 auto; width: 91.666667%; }
+  .bima-col-lg-12    { flex: 0 0 auto; width: 100%; }
+  .bima-offset-lg-0  { margin-left: 0; }
+  .bima-offset-lg-1  { margin-left:  8.333333%; }
+  .bima-offset-lg-2  { margin-left: 16.666667%; }
+  .bima-offset-lg-3  { margin-left: 25%; }
+  .bima-offset-lg-4  { margin-left: 33.333333%; }
+  .bima-offset-lg-5  { margin-left: 41.666667%; }
+  .bima-offset-lg-6  { margin-left: 50%; }
+  .bima-offset-lg-7  { margin-left: 58.333333%; }
+  .bima-offset-lg-8  { margin-left: 66.666667%; }
+  .bima-offset-lg-9  { margin-left: 75%; }
+  .bima-offset-lg-10 { margin-left: 83.333333%; }
+  .bima-offset-lg-11 { margin-left: 91.666667%; }
+  .bima-order-lg-first { order: -1; }
+  .bima-order-lg-last  { order: 13; }
+  .bima-order-lg-0 { order: 0; }
+  .bima-order-lg-1 { order: 1; }
+  .bima-order-lg-2 { order: 2; }
+  .bima-order-lg-3 { order: 3; }
+  .bima-order-lg-4 { order: 4; }
+  .bima-order-lg-5 { order: 5; }
+}
+
+/* ─── xl (≥1280px / 80rem) ───────────────────────────────────────────────── */
+@media (min-width: 80rem) {
+  .bima-col-xl       { flex: 1 0 0%; }
+  .bima-col-xl-auto  { flex: 0 0 auto; width: auto; }
+  .bima-col-xl-1     { flex: 0 0 auto; width:  8.333333%; }
+  .bima-col-xl-2     { flex: 0 0 auto; width: 16.666667%; }
+  .bima-col-xl-3     { flex: 0 0 auto; width: 25%; }
+  .bima-col-xl-4     { flex: 0 0 auto; width: 33.333333%; }
+  .bima-col-xl-5     { flex: 0 0 auto; width: 41.666667%; }
+  .bima-col-xl-6     { flex: 0 0 auto; width: 50%; }
+  .bima-col-xl-7     { flex: 0 0 auto; width: 58.333333%; }
+  .bima-col-xl-8     { flex: 0 0 auto; width: 66.666667%; }
+  .bima-col-xl-9     { flex: 0 0 auto; width: 75%; }
+  .bima-col-xl-10    { flex: 0 0 auto; width: 83.333333%; }
+  .bima-col-xl-11    { flex: 0 0 auto; width: 91.666667%; }
+  .bima-col-xl-12    { flex: 0 0 auto; width: 100%; }
+  .bima-offset-xl-0  { margin-left: 0; }
+  .bima-offset-xl-1  { margin-left:  8.333333%; }
+  .bima-offset-xl-2  { margin-left: 16.666667%; }
+  .bima-offset-xl-3  { margin-left: 25%; }
+  .bima-offset-xl-4  { margin-left: 33.333333%; }
+  .bima-offset-xl-5  { margin-left: 41.666667%; }
+  .bima-offset-xl-6  { margin-left: 50%; }
+  .bima-offset-xl-7  { margin-left: 58.333333%; }
+  .bima-offset-xl-8  { margin-left: 66.666667%; }
+  .bima-offset-xl-9  { margin-left: 75%; }
+  .bima-offset-xl-10 { margin-left: 83.333333%; }
+  .bima-offset-xl-11 { margin-left: 91.666667%; }
+}
+
+/* ─── xxl (≥1536px / 96rem) ──────────────────────────────────────────────── */
+@media (min-width: 96rem) {
+  .bima-col-xxl       { flex: 1 0 0%; }
+  .bima-col-xxl-auto  { flex: 0 0 auto; width: auto; }
+  .bima-col-xxl-1     { flex: 0 0 auto; width:  8.333333%; }
+  .bima-col-xxl-2     { flex: 0 0 auto; width: 16.666667%; }
+  .bima-col-xxl-3     { flex: 0 0 auto; width: 25%; }
+  .bima-col-xxl-4     { flex: 0 0 auto; width: 33.333333%; }
+  .bima-col-xxl-5     { flex: 0 0 auto; width: 41.666667%; }
+  .bima-col-xxl-6     { flex: 0 0 auto; width: 50%; }
+  .bima-col-xxl-7     { flex: 0 0 auto; width: 58.333333%; }
+  .bima-col-xxl-8     { flex: 0 0 auto; width: 66.666667%; }
+  .bima-col-xxl-9     { flex: 0 0 auto; width: 75%; }
+  .bima-col-xxl-10    { flex: 0 0 auto; width: 83.333333%; }
+  .bima-col-xxl-11    { flex: 0 0 auto; width: 91.666667%; }
+  .bima-col-xxl-12    { flex: 0 0 auto; width: 100%; }
+  .bima-offset-xxl-0  { margin-left: 0; }
+  .bima-offset-xxl-1  { margin-left:  8.333333%; }
+  .bima-offset-xxl-2  { margin-left: 16.666667%; }
+  .bima-offset-xxl-3  { margin-left: 25%; }
+  .bima-offset-xxl-4  { margin-left: 33.333333%; }
+  .bima-offset-xxl-5  { margin-left: 41.666667%; }
+  .bima-offset-xxl-6  { margin-left: 50%; }
+  .bima-offset-xxl-7  { margin-left: 58.333333%; }
+  .bima-offset-xxl-8  { margin-left: 66.666667%; }
+  .bima-offset-xxl-9  { margin-left: 75%; }
+  .bima-offset-xxl-10 { margin-left: 83.333333%; }
+  .bima-offset-xxl-11 { margin-left: 91.666667%; }
+}
+
+/* ─── CSS Grid layout (modern alternative) ───────────────────────────────── */
+.bima-grid-cols-1  { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.bima-grid-cols-2  { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bima-grid-cols-3  { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bima-grid-cols-4  { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bima-grid-cols-6  { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.bima-grid-cols-12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+.bima-col-span-1  { grid-column: span 1 / span 1; }
+.bima-col-span-2  { grid-column: span 2 / span 2; }
+.bima-col-span-3  { grid-column: span 3 / span 3; }
+.bima-col-span-4  { grid-column: span 4 / span 4; }
+.bima-col-span-6  { grid-column: span 6 / span 6; }
+.bima-col-span-full { grid-column: 1 / -1; }
+
+@media (min-width: 48rem) {
+  .bima-grid-cols-md-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .bima-grid-cols-md-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bima-grid-cols-md-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bima-grid-cols-md-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bima-col-span-md-1   { grid-column: span 1 / span 1; }
+  .bima-col-span-md-2   { grid-column: span 2 / span 2; }
+  .bima-col-span-md-3   { grid-column: span 3 / span 3; }
+  .bima-col-span-md-4   { grid-column: span 4 / span 4; }
+  .bima-col-span-md-full { grid-column: 1 / -1; }
+}
+
+@media (min-width: 64rem) {
+  .bima-grid-cols-lg-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .bima-grid-cols-lg-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bima-grid-cols-lg-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bima-grid-cols-lg-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bima-grid-cols-lg-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .bima-col-span-lg-1   { grid-column: span 1 / span 1; }
+  .bima-col-span-lg-2   { grid-column: span 2 / span 2; }
+  .bima-col-span-lg-3   { grid-column: span 3 / span 3; }
+  .bima-col-span-lg-4   { grid-column: span 4 / span 4; }
+  .bima-col-span-lg-full { grid-column: 1 / -1; }
+}
+
+/* ========== tokens/bima.css ========== */
+/**
+ * BIMA Design System — Component Stylesheet
+ * ───────────────────────────────────────────────────────────────────────────
+ * The canonical, technology-neutral implementation of every BIMA component.
+ * Every value resolves to a `--bima-*` token from variables.css — there are NO
+ * hard-coded colours, sizes, or shadows. This file is the single source of truth
+ * the docs and examples consume, so the system can never drift.
+ *
+ * USAGE — link the compiled bundle (variables + reboot + this + utilities):
+ *   <link rel="stylesheet" href="dist/bima.css">
+ *
+ * Class naming — BEM-ish:
+ *   Block     .bima-card
+ *   Element   .bima-card__title
+ *   Modifier  .bima-btn--primary
+ *   State     .is-open / .is-active / .is-error / .is-loading
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* ===========================================================================
+   1. LAYOUT PRIMITIVES
+   =========================================================================== */
+.bima-container {
+  width: 100%;
+  max-width: var(--bima-container-app);
+  margin-inline: auto;
+  padding-inline: var(--bima-space-4);
+}
+.bima-container--wide  { max-width: var(--bima-container-wide); }
+.bima-container--tight { max-width: var(--bima-container-tight); }
+.bima-container--sm    { max-width: var(--bima-container-sm); }
+.bima-container--md    { max-width: var(--bima-container-md); }
+.bima-container--lg    { max-width: var(--bima-container-lg); }
+.bima-container--xl    { max-width: var(--bima-container-xl); }
+.bima-container--fluid { max-width: none; }
+@media (min-width: 48rem) { .bima-container { padding-inline: var(--bima-space-8); } }
+
+/* Brand "shell" — the centred, edge-padded content rail. */
+.bima-shell {
+  width: min(100% - 2rem, var(--bima-container-wide));
+  margin-inline: auto;
+}
+.bima-shell--tight { width: min(100% - 2rem, var(--bima-container-tight)); }
+@media (min-width: 48rem) {
+  .bima-shell        { width: min(100% - 6rem, var(--bima-container-wide)); }
+  .bima-shell--tight { width: min(100% - 6rem, var(--bima-container-tight)); }
+}
+
+/* Flow utilities */
+.bima-stack    { display: flex; flex-direction: column; gap: var(--bima-space-4); }
+.bima-stack--xs { gap: var(--bima-space-1); }
+.bima-stack--sm { gap: var(--bima-space-2); }
+.bima-stack--lg { gap: var(--bima-space-6); }
+.bima-stack--xl { gap: var(--bima-space-8); }
+.bima-cluster  { display: flex; flex-wrap: wrap; align-items: center; gap: var(--bima-space-3); }
+.bima-cluster--between { justify-content: space-between; }
+.bima-center   { display: grid; place-items: center; }
+
+.bima-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ===========================================================================
+   2. BUTTONS
+   =========================================================================== */
+.bima-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--bima-space-2);
+  height: var(--bima-control-md);
+  padding-inline: var(--bima-space-5);
+  border: 1px solid transparent;
+  border-radius: var(--bima-radius-md);
+  font-family: var(--bima-font-button, var(--bima-font-body));
+  font-size: var(--bima-text-small);
+  font-weight: var(--bima-font-semibold);
+  letter-spacing: 0.01em;
+  line-height: 1; white-space: nowrap; text-decoration: none;
+  cursor: pointer; user-select: none; -webkit-appearance: none; appearance: none;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard),
+              border-color var(--bima-duration-fast) var(--bima-ease-standard),
+              color var(--bima-duration-fast) var(--bima-ease-standard),
+              box-shadow var(--bima-duration-fast) var(--bima-ease-standard),
+              transform var(--bima-duration-instant) var(--bima-ease-standard);
+}
+.bima-btn:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; }
+.bima-btn:active        { transform: translateY(1px); }
+.bima-btn:disabled, .bima-btn.is-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.bima-btn:hover { text-decoration: none; }
+
+/* Variants */
+.bima-btn--primary       { background: var(--bima-interactive-primary); color: var(--bima-text-inverse); }
+.bima-btn--primary:hover { background: var(--bima-interactive-primary-hover); box-shadow: var(--bima-shadow-sm); }
+.bima-btn--secondary       { background: transparent; color: var(--bima-interactive-secondary); border-color: var(--bima-interactive-secondary); }
+.bima-btn--secondary:hover { background: var(--bima-state-selected); color: var(--bima-interactive-secondary-hover); border-color: var(--bima-interactive-secondary-hover); }
+.bima-btn--accent        { background: var(--bima-sky); color: var(--bima-navy); }
+.bima-btn--accent:hover  { background: var(--bima-sky-light); }
+.bima-btn--ghost         { background: transparent; color: var(--bima-text-secondary); border-color: var(--bima-border-default); }
+.bima-btn--ghost:hover   { background: var(--bima-state-hover); color: var(--bima-text-primary); border-color: var(--bima-border-strong); }
+.bima-btn--subtle        { background: var(--bima-state-hover); color: var(--bima-text-secondary); }
+.bima-btn--subtle:hover  { background: var(--bima-state-hover-strong); color: var(--bima-text-primary); }
+.bima-btn--destructive       { background: var(--bima-error); color: var(--bima-text-inverse); }
+.bima-btn--destructive:hover { background: var(--bima-error-dark); box-shadow: var(--bima-shadow-sm); }
+.bima-btn--success       { background: var(--bima-success); color: var(--bima-text-inverse); }
+.bima-btn--success:hover { background: var(--bima-success-dark); }
+.bima-btn--link        { background: transparent; color: var(--bima-text-link); padding-inline: 0; height: auto; border: 0; }
+.bima-btn--link:hover  { color: var(--bima-text-link-hover); text-decoration: underline; }
+
+/* Sizes */
+.bima-btn--xs   { height: var(--bima-control-xs); padding: 0 var(--bima-space-3); font-size: var(--bima-text-caption); line-height: 1; }
+.bima-btn--sm   { height: var(--bima-control-sm); padding-inline: var(--bima-space-3); font-size: var(--bima-text-caption); }
+.bima-btn--lg   { height: var(--bima-control-lg); padding-inline: var(--bima-space-6); font-size: var(--bima-text-base); }
+.bima-btn--icon { width: var(--bima-control-md); padding-inline: 0; }
+.bima-btn--icon.bima-btn--xs  { width: var(--bima-control-xs); }
+.bima-btn--icon.bima-btn--sm { width: var(--bima-control-sm); }
+.bima-btn--icon.bima-btn--lg { width: var(--bima-control-lg); }
+.bima-btn--block { width: 100%; }
+.bima-btn svg, .bima-btn .bima-icon { width: 1.125em; height: 1.125em; flex-shrink: 0; }
+
+/* Pill buttons */
+.bima-btn--pill { border-radius: var(--bima-radius-full); padding-inline: var(--bima-space-6); }
+
+/* ── Signature CTA — pill with a circular arrow affordance ──────────────────────
+   The hallmark BIMA call-to-action. Sky pill, navy text, white arrow chip.
+   Hover flips to blue/white. Use for primary marketing actions. */
+.bima-btn--cta {
+  border-radius: var(--bima-radius-full);
+  height: auto;
+  padding: 0.3125rem 0.3125rem 0.3125rem var(--bima-space-6);
+  gap: var(--bima-space-4);
+  background: var(--bima-sky); color: var(--bima-navy);
+  font-weight: var(--bima-font-bold); font-size: var(--bima-text-base);
+}
+.bima-btn--cta::after {
+  content: ""; flex-shrink: 0;
+  width: 2.25rem; height: 2.25rem; border-radius: var(--bima-radius-full);
+  background-color: var(--bima-surface-card);
+  background-image: url("data:image/svg+xml,%3Csvg width='19' height='8' viewBox='0 0 19 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 3.18C0.22 3.18 0 3.41 0 3.68s.22.5.5.5v-1ZM18.85 4.04a.5.5 0 0 0 0-.71L15.67.15a.5.5 0 1 0-.71.71l2.83 2.82-2.83 2.83a.5.5 0 1 0 .71.71l3.18-3.18ZM.5 3.68v.5h18v-1H.5v.5Z' fill='%230A2261'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center; background-size: 45%;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard),
+              transform var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-btn--cta:hover { background: var(--bima-blue); color: var(--bima-text-inverse); }
+.bima-btn--cta:hover::after { transform: translateX(3px); }
+.bima-btn--cta.bima-btn--lg { font-size: var(--bima-text-large); padding-left: var(--bima-space-8); }
+.bima-btn--cta.bima-btn--lg::after { width: 3rem; height: 3rem; }
+/* On-navy variant — white pill, blue chip */
+.bima-btn--cta-inverse { background: var(--bima-surface-card); color: var(--bima-text-link); }
+.bima-btn--cta-inverse::after { background-color: var(--bima-blue);
+  background-image: url("data:image/svg+xml,%3Csvg width='19' height='8' viewBox='0 0 19 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 3.18C0.22 3.18 0 3.41 0 3.68s.22.5.5.5v-1ZM18.85 4.04a.5.5 0 0 0 0-.71L15.67.15a.5.5 0 1 0-.71.71l2.83 2.82-2.83 2.83a.5.5 0 1 0 .71.71l3.18-3.18ZM.5 3.68v.5h18v-1H.5v.5Z' fill='white'/%3E%3C/svg%3E"); }
+.bima-btn--cta-inverse:hover { background: var(--bima-navy); color: var(--bima-text-inverse); }
+
+/* Loading state — pair with aria-busy="true" and disable the control */
+.bima-btn.is-loading { color: transparent !important; position: relative; pointer-events: none; }
+.bima-btn.is-loading::after {
+  content: ""; position: absolute; top: 50%; left: 50%; width: 1em; height: 1em; margin: -0.5em 0 0 -0.5em;
+  border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;
+  color: var(--bima-text-inverse); animation: bima-spin 0.7s linear infinite;
+}
+
+/* ===========================================================================
+   3. BUTTON GROUP
+   =========================================================================== */
+.bima-btn-group { display: inline-flex; }
+.bima-btn-group .bima-btn { border-radius: 0; }
+.bima-btn-group .bima-btn:first-child { border-top-left-radius: var(--bima-radius-md); border-bottom-left-radius: var(--bima-radius-md); }
+.bima-btn-group .bima-btn:last-child  { border-top-right-radius: var(--bima-radius-md); border-bottom-right-radius: var(--bima-radius-md); }
+.bima-btn-group .bima-btn:not(:first-child) { margin-left: -1px; }
+.bima-btn-group .bima-btn:hover, .bima-btn-group .bima-btn:focus-visible { z-index: 1; }
+/* Unify seams when mixing variants: outline/ghost buttons share one neutral
+   border (so a secondary's blue edge doesn't clash with a ghost's grey edge),
+   while filled buttons keep their fill. Variant identity stays in text colour. */
+.bima-btn-group > .bima-btn { border-color: var(--bima-border-strong); }
+.bima-btn-group > .bima-btn--primary,
+.bima-btn-group > .bima-btn--destructive,
+.bima-btn-group > .bima-btn--success { border-color: transparent; }
+.bima-btn-group--vertical { flex-direction: column; }
+.bima-btn-group--vertical .bima-btn { border-radius: 0; }
+.bima-btn-group--vertical .bima-btn:first-child { border-top-left-radius: var(--bima-radius-md); border-top-right-radius: var(--bima-radius-md); }
+.bima-btn-group--vertical .bima-btn:last-child  { border-bottom-left-radius: var(--bima-radius-md); border-bottom-right-radius: var(--bima-radius-md); }
+.bima-btn-group--vertical .bima-btn:not(:first-child) { margin-left: 0; margin-top: -1px; }
+
+/* ===========================================================================
+   4. FORM CONTROLS
+   =========================================================================== */
+.bima-field   { display: flex; flex-direction: column; gap: var(--bima-space-2); }
+.bima-label   { font-family: var(--bima-font-label); font-size: var(--bima-text-small); font-weight: var(--bima-font-medium); color: var(--bima-text-primary); margin: 0; }
+.bima-required { color: var(--bima-error); margin-inline-start: 2px; }
+.bima-help    { font-size: var(--bima-text-caption); color: var(--bima-text-muted); line-height: var(--bima-leading-normal); }
+.bima-error-text   { font-size: var(--bima-text-caption); color: var(--bima-error-text); display: flex; align-items: center; gap: var(--bima-space-1); }
+.bima-success-text { font-size: var(--bima-text-caption); color: var(--bima-success-text); }
+
+.bima-input, .bima-select, .bima-textarea {
+  width: 100%;
+  font-family: var(--bima-font-body);
+  font-size: var(--bima-text-small);
+  color: var(--bima-text-primary);
+  background: var(--bima-surface-input);
+  border: 1px solid var(--bima-border-strong);
+  border-radius: var(--bima-radius-md);
+  transition: border-color var(--bima-duration-fast) var(--bima-ease-standard),
+              box-shadow var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-input, .bima-select { height: var(--bima-control-md); padding-inline: var(--bima-space-3); font-variant-numeric: tabular-nums; }
+.bima-textarea { min-height: 5rem; padding: var(--bima-space-3); resize: vertical; line-height: var(--bima-leading-normal); font-variant-numeric: tabular-nums; }
+.bima-input--sm, .bima-select--sm { height: var(--bima-control-sm); font-size: var(--bima-text-caption); }
+.bima-input--lg, .bima-select--lg { height: var(--bima-control-lg); font-size: var(--bima-text-base); }
+.bima-input[type="date"], .bima-input[type="time"], .bima-input[type="datetime-local"],
+.bima-input[type="month"], .bima-input[type="week"] {
+  -webkit-appearance: none; appearance: none;
+  accent-color: var(--bima-blue);
+}
+.bima-input[type="date"]::-webkit-calendar-picker-indicator,
+.bima-input[type="time"]::-webkit-calendar-picker-indicator,
+.bima-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer; border-radius: var(--bima-radius-sm); padding: 2px;
+  opacity: 0.65; transition: opacity var(--bima-duration-fast);
+}
+.bima-input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.bima-input[type="time"]::-webkit-calendar-picker-indicator:hover,
+.bima-input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1; background-color: var(--bima-blue-tint);
+}
+
+.bima-input::placeholder, .bima-textarea::placeholder { color: var(--bima-text-muted); opacity: 1; }
+.bima-input:hover, .bima-select:hover, .bima-textarea:hover { border-color: var(--bima-text-muted); }
+.bima-input:focus, .bima-select:focus, .bima-textarea:focus {
+  outline: none;
+  border-color: var(--bima-blue);
+  box-shadow: 0 0 0 3px rgba(50, 92, 168, 0.18);
+}
+.bima-input.is-error, .bima-select.is-error, .bima-textarea.is-error,
+.bima-input[aria-invalid="true"] { border-color: var(--bima-error); }
+.bima-input.is-error:focus, .bima-textarea.is-error:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+.bima-input.is-success { border-color: var(--bima-success); }
+.bima-input:disabled, .bima-select:disabled, .bima-textarea:disabled {
+  background: var(--bima-surface-input-disabled); color: var(--bima-text-disabled); cursor: not-allowed; border-color: var(--bima-border-default);
+}
+
+.bima-select {
+  appearance: none; -webkit-appearance: none; padding-inline-end: var(--bima-space-8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235E6B7B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right var(--bima-space-3) center; cursor: pointer;
+}
+.bima-select[multiple] { height: auto; padding: var(--bima-space-2); background-image: none; }
+
+/* Checkbox / Radio / Switch */
+.bima-choice { display: inline-flex; align-items: center; gap: var(--bima-space-2); cursor: pointer; font-size: var(--bima-text-small); color: var(--bima-text-primary); }
+.bima-choice--block { display: flex; }
+.bima-check, .bima-radio {
+  appearance: none; -webkit-appearance: none; width: 1.125rem; height: 1.125rem; flex-shrink: 0; margin: 0;
+  border: 1.5px solid var(--bima-border-strong); background: var(--bima-surface-input);
+  display: grid; place-content: center; cursor: pointer;
+  transition: background-color var(--bima-duration-fast), border-color var(--bima-duration-fast);
+}
+.bima-check { border-radius: var(--bima-radius-sm); }
+.bima-radio { border-radius: var(--bima-radius-full); }
+.bima-check:hover, .bima-radio:hover { border-color: var(--bima-blue); }
+.bima-check:checked, .bima-radio:checked { background: var(--bima-navy); border-color: var(--bima-navy); }
+.bima-check:checked::after { content: ""; width: 0.3rem; height: 0.55rem; margin-top: -2px;
+  border: solid var(--bima-text-inverse); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.bima-radio:checked::after { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--bima-text-inverse); }
+.bima-check:focus-visible, .bima-radio:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; }
+.bima-check:disabled, .bima-radio:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.bima-switch { appearance: none; -webkit-appearance: none; position: relative; width: 2.5rem; height: 1.375rem; flex-shrink: 0; margin: 0;
+  border-radius: var(--bima-radius-full); background: var(--bima-border-strong); cursor: pointer;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard); }
+.bima-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 1.125rem; height: 1.125rem;
+  border-radius: 50%; background: var(--bima-surface-card); box-shadow: var(--bima-shadow-sm);
+  transition: transform var(--bima-duration-fast) var(--bima-ease-standard); }
+.bima-switch:checked { background: var(--bima-blue); }
+.bima-switch:checked::after { transform: translateX(1.125rem); }
+.bima-switch:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; }
+.bima-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Range */
+.bima-range { appearance: none; -webkit-appearance: none; width: 100%; height: 1.25rem; background: transparent; cursor: pointer; }
+.bima-range::-webkit-slider-runnable-track { height: 0.375rem; background: var(--bima-border-strong); border-radius: var(--bima-radius-full); }
+.bima-range::-moz-range-track { height: 0.375rem; background: var(--bima-border-strong); border-radius: var(--bima-radius-full); }
+.bima-range::-webkit-slider-thumb { -webkit-appearance: none; margin-top: -0.3125rem; width: 1rem; height: 1rem; background: var(--bima-blue); border: 2px solid var(--bima-surface-card); border-radius: 50%; box-shadow: var(--bima-shadow-sm); }
+.bima-range::-moz-range-thumb { width: 1rem; height: 1rem; background: var(--bima-blue); border: 2px solid var(--bima-surface-card); border-radius: 50%; }
+.bima-range:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 4px; }
+
+/* Input group */
+.bima-input-group { display: flex; align-items: stretch; width: 100%; }
+.bima-input-group > .bima-input, .bima-input-group > .bima-select { flex: 1 1 auto; width: 1%; min-width: 0; border-radius: 0; }
+.bima-input-group > .bima-btn { border-radius: 0; }
+.bima-input-group__text {
+  display: flex; align-items: center; padding: 0 var(--bima-space-3);
+  background: var(--bima-mist); border: 1px solid var(--bima-border-strong);
+  color: var(--bima-text-muted); font-size: var(--bima-text-small); white-space: nowrap;
+}
+.bima-input-group > :first-child { border-top-left-radius: var(--bima-radius-md); border-bottom-left-radius: var(--bima-radius-md); }
+.bima-input-group > :last-child  { border-top-right-radius: var(--bima-radius-md); border-bottom-right-radius: var(--bima-radius-md); }
+.bima-input-group > :not(:first-child) { margin-left: -1px; }
+.bima-input-group > .bima-input:focus, .bima-input-group > .bima-select:focus { z-index: 2; }
+
+/* Floating label — input needs placeholder=" "; label comes AFTER input.
+   Floating controls are taller than standard ones so the floated label (top)
+   and the value (bottom) each get comfortable room. */
+.bima-float { position: relative; }
+.bima-float > .bima-input, .bima-float > .bima-select {
+  height: auto; min-height: 3.5rem;
+  padding-top: var(--bima-space-6); padding-bottom: var(--bima-space-2);
+}
+.bima-float > .bima-textarea { padding-top: var(--bima-space-6); }
+.bima-float > label {
+  position: absolute; top: 0; left: 0;
+  /* resting label aligns with the value (matches the input's padding-top) */
+  padding: var(--bima-space-6) var(--bima-space-3) 0;
+  color: var(--bima-text-muted); font-size: var(--bima-text-small); line-height: 1; pointer-events: none;
+  transform-origin: 0 0;
+  transition: transform var(--bima-duration-fast) var(--bima-ease-standard), color var(--bima-duration-fast) var(--bima-ease-standard);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.bima-float > .bima-textarea + label { padding-top: var(--bima-space-6); }
+.bima-float > .bima-input:focus + label,
+.bima-float > .bima-input:not(:placeholder-shown) + label,
+.bima-float > .bima-select:focus + label,
+.bima-float > .bima-select:valid + label {
+  /* resting at 24px (space-6) → float up to ~7px from the top of the control */
+  transform: translateY(-1.0625rem) scale(0.857); color: var(--bima-text-link);
+}
+.bima-float > .bima-textarea:focus + label,
+.bima-float > .bima-textarea:not(:placeholder-shown) + label {
+  /* text at 24px → (24-17)×0.857 ≈ 6px from top */
+  transform: translateY(-1.0625rem) scale(0.857); color: var(--bima-text-link);
+}
+
+/* Validation feedback */
+.bima-invalid-feedback, .bima-valid-feedback { display: none; font-size: var(--bima-text-caption); margin-top: var(--bima-space-1); }
+.bima-invalid-feedback { color: var(--bima-error-text); }
+.bima-valid-feedback   { color: var(--bima-success-text); }
+.bima-field.is-invalid .bima-invalid-feedback,
+.bima-field.is-valid .bima-valid-feedback { display: block; }
+.bima-field.is-invalid .bima-input, .bima-field.is-invalid .bima-select, .bima-field.is-invalid .bima-textarea { border-color: var(--bima-error); }
+.bima-field.is-valid .bima-input, .bima-field.is-valid .bima-select, .bima-field.is-valid .bima-textarea { border-color: var(--bima-success); }
+
+/* Verified / completed field — soft brand tint + check mark.
+   Mirrors the BIMA registration flow, where confirmed answers settle into a
+   calm blue fill. Add `.is-verified` once a value is validated. */
+.bima-input.is-verified, .bima-select.is-verified {
+  background-color: var(--bima-surface-input-filled);
+  border-color: transparent;
+  color: var(--bima-text-primary);
+  font-weight: var(--bima-font-medium);
+}
+.bima-input.is-verified {
+  padding-inline-end: var(--bima-space-8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M13 4.5L6.5 11 3 7.5' stroke='%23325CA8' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--bima-space-3) center;
+}
+.bima-input.is-verified:focus, .bima-select.is-verified:focus { border-color: var(--bima-blue); }
+
+/* Form section — a titled group of fields. The uppercase label, optional
+   right-aligned action (e.g. a "Secure" trust cue) and divider rule echo the
+   sectioned BIMA registration screens. */
+.bima-form-section {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--bima-space-3);
+  margin-block: var(--bima-space-6) var(--bima-space-4);
+  padding-bottom: var(--bima-space-2);
+  border-bottom: 1px solid var(--bima-border-subtle);
+}
+.bima-form-section:first-child { margin-top: 0; }
+.bima-form-section__label {
+  font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold);
+  letter-spacing: var(--bima-tracking-wide); text-transform: uppercase;
+  color: var(--bima-text-muted); margin: 0;
+}
+.bima-form-section__action {
+  font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-link); display: inline-flex; align-items: center; gap: var(--bima-space-1);
+}
+.bima-form-section__action svg, .bima-form-section__action .bima-icon { width: 0.875em; height: 0.875em; }
+
+/* ===========================================================================
+   5. BADGES & TAGS
+   =========================================================================== */
+.bima-badge {
+  display: inline-flex; align-items: center; gap: var(--bima-space-1);
+  padding: 0.2em var(--bima-space-2);
+  font-size: var(--bima-text-caption); font-weight: var(--bima-font-semibold); line-height: 1.4;
+  border-radius: var(--bima-radius-full); border: 1px solid transparent; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.bima-badge__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.bima-badge--success { background: var(--bima-success-bg); color: var(--bima-success-text); }
+.bima-badge--warning { background: var(--bima-warning-bg); color: var(--bima-warning-text); }
+.bima-badge--error   { background: var(--bima-error-bg);   color: var(--bima-error-text); }
+.bima-badge--info    { background: var(--bima-info-bg);    color: var(--bima-info-text); }
+.bima-badge--neutral { background: var(--bima-neutral-bg); color: var(--bima-neutral-text); }
+.bima-badge--solid   { background: var(--bima-navy);       color: var(--bima-text-inverse); }
+.bima-badge--sky     { background: var(--bima-sky-muted);  color: var(--bima-text-primary); }
+.bima-badge--outline { background: transparent; color: var(--bima-text-secondary); border-color: var(--bima-border-strong); }
+
+/* ===========================================================================
+   6. ALERTS
+   =========================================================================== */
+.bima-alert {
+  display: flex; gap: var(--bima-space-3); align-items: flex-start;
+  padding: var(--bima-space-4);
+  border: 1px solid; border-radius: var(--bima-radius-lg);
+  font-size: var(--bima-text-small); line-height: var(--bima-leading-normal);
+}
+.bima-alert__icon  { flex-shrink: 0; line-height: 1; margin-top: 1px; }
+.bima-alert__icon svg { width: 1.25rem; height: 1.25rem; display: block; }
+.bima-alert__content { flex: 1; min-width: 0; }
+.bima-alert__title { display: block; font-weight: var(--bima-font-bold); margin-bottom: 2px; }
+.bima-alert__close { margin: -0.25rem -0.25rem -0.25rem auto; }
+.bima-alert--info    { background: var(--bima-info-bg);    border-color: rgba(50,92,168,0.25);  color: var(--bima-info-text); }
+.bima-alert--success { background: var(--bima-success-bg); border-color: rgba(27,183,146,0.3);  color: var(--bima-success-text); }
+.bima-alert--warning { background: var(--bima-warning-bg); border-color: rgba(250,140,22,0.3);  color: var(--bima-warning-text); }
+.bima-alert--error   { background: var(--bima-error-bg);   border-color: rgba(239,68,68,0.3);   color: var(--bima-error-text); }
+
+/* ===========================================================================
+   7. CARDS
+   =========================================================================== */
+.bima-card {
+  background: var(--bima-surface-card);
+  border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-xl);
+  box-shadow: var(--bima-shadow-soft);
+  overflow: hidden;
+}
+.bima-card__media { display: block; width: 100%; }
+.bima-card__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bima-card__header { padding: var(--bima-space-5) var(--bima-space-6); border-bottom: 1px solid var(--bima-border-default); }
+.bima-card__title  { font-family: var(--bima-font-heading); font-size: var(--bima-text-h4); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); margin: 0; }
+.bima-card__subtitle { font-size: var(--bima-text-small); color: var(--bima-text-muted); margin-top: 2px; }
+.bima-card__body   { padding: var(--bima-space-6); color: var(--bima-text-secondary); line-height: var(--bima-leading-normal); }
+.bima-card__body > :last-child { margin-bottom: 0; }
+.bima-card__footer { padding: var(--bima-space-4) var(--bima-space-6); border-top: 1px solid var(--bima-border-default); display: flex; align-items: center; justify-content: flex-end; gap: var(--bima-space-2); }
+
+.bima-card--flush .bima-card__body { padding: 0; }
+.bima-card--mist  { background: var(--bima-surface-muted); border-color: transparent; box-shadow: none; }
+.bima-card--soft  { box-shadow: var(--bima-shadow-card); }
+.bima-card--interactive { cursor: pointer; transition: box-shadow var(--bima-duration-standard) var(--bima-ease-standard), transform var(--bima-duration-standard) var(--bima-ease-standard); }
+.bima-card--interactive:hover { box-shadow: var(--bima-shadow-card); transform: translateY(-4px); }
+.bima-card--navy  { background: var(--bima-gradient-navy); border-color: transparent; color: var(--bima-text-inverse); }
+.bima-card--navy .bima-card__title { color: var(--bima-text-inverse); }
+.bima-card--navy .bima-card__body  { color: var(--bima-text-on-navy); }
+.bima-card--navy .bima-card__header, .bima-card--navy .bima-card__footer { border-color: rgba(255,255,255,0.14); }
+.bima-card--glass {
+  background: rgba(255,255,255,0.14); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  border: 1px solid rgba(255,255,255,0.22); border-radius: var(--bima-radius-xl);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.3); color: var(--bima-text-inverse);
+}
+
+/* KPI card */
+.bima-kpi { background: var(--bima-surface-card); border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-xl); box-shadow: var(--bima-shadow-soft); padding: var(--bima-space-5); }
+.bima-kpi__label { font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-semibold); color: var(--bima-text-muted); text-transform: uppercase; letter-spacing: var(--bima-tracking-wide); }
+.bima-kpi__value { font-family: var(--bima-font-heading); font-size: var(--bima-text-h2); font-weight: var(--bima-font-bold); color: var(--bima-text-primary); line-height: 1.1; margin-top: var(--bima-space-1); font-variant-numeric: tabular-nums; }
+.bima-kpi__delta { font-size: var(--bima-text-caption); margin-top: var(--bima-space-1); display: inline-flex; align-items: center; gap: 2px; font-variant-numeric: tabular-nums; }
+.bima-kpi__delta--up   { color: var(--bima-success-text); }
+.bima-kpi__delta--down { color: var(--bima-error-text); }
+
+/* Feature panel (brand blue callout) */
+.bima-panel { border-radius: var(--bima-radius-2xl); padding: var(--bima-space-12); }
+.bima-panel--blue { background: var(--bima-blue); color: var(--bima-text-inverse); }
+.bima-panel--navy { background: var(--bima-gradient-navy); color: var(--bima-text-inverse); }
+.bima-panel--mist { background: var(--bima-surface-muted); color: var(--bima-text-primary); }
+.bima-panel--blue h1, .bima-panel--blue h2, .bima-panel--blue h3, .bima-panel--blue h4,
+.bima-panel--navy h1, .bima-panel--navy h2, .bima-panel--navy h3, .bima-panel--navy h4 { color: var(--bima-text-inverse); }
+
+/* ===========================================================================
+   8. TABLE
+   =========================================================================== */
+.bima-table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-lg); background: var(--bima-surface-card); }
+.bima-table { width: 100%; border-collapse: collapse; font-size: var(--bima-text-small); }
+.bima-table thead th {
+  text-align: left; padding: var(--bima-space-3) var(--bima-space-4);
+  font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-muted); text-transform: uppercase; letter-spacing: var(--bima-tracking-wide);
+  background: var(--bima-surface-page); border-bottom: 1px solid var(--bima-border-default); white-space: nowrap;
+}
+.bima-table tbody td { padding: var(--bima-space-3) var(--bima-space-4); border-bottom: 1px solid var(--bima-border-default); vertical-align: middle; color: var(--bima-text-primary); }
+.bima-table tbody tr:last-child td { border-bottom: 0; }
+.bima-table tbody tr:hover td { background: var(--bima-row-hover); }
+.bima-table tbody tr[aria-selected="true"] td { background: var(--bima-state-selected); }
+.bima-table .bima-num { text-align: right; font-variant-numeric: tabular-nums; }
+.bima-table--striped tbody tr:nth-child(even) td { background: var(--bima-surface-page); }
+.bima-table--bordered td, .bima-table--bordered th { border: 1px solid var(--bima-border-default); }
+.bima-table--compact thead th, .bima-table--compact tbody td { padding: var(--bima-space-2) var(--bima-space-3); }
+
+/* ===========================================================================
+   9. NAVIGATION — sidebar item + marketing navbar
+   =========================================================================== */
+.bima-navitem {
+  display: flex; align-items: center; gap: var(--bima-space-3);
+  padding: var(--bima-space-2) var(--bima-space-3);
+  border-radius: var(--bima-radius-md); position: relative;
+  font-family: var(--bima-font-sidebar); font-size: var(--bima-text-small); font-weight: var(--bima-font-medium);
+  color: var(--bima-text-secondary); text-decoration: none; cursor: pointer;
+  transition: background-color var(--bima-duration-fast), color var(--bima-duration-fast);
+}
+.bima-navitem svg, .bima-navitem .bima-icon { width: 1.125rem; height: 1.125rem; flex-shrink: 0; }
+.bima-navitem:hover { background: var(--bima-state-hover); color: var(--bima-text-primary); text-decoration: none; }
+.bima-navitem.is-active, .bima-navitem[aria-current="page"] {
+  background: var(--bima-state-selected); color: var(--bima-state-selected-text); font-weight: var(--bima-font-semibold);
+}
+.bima-navitem.is-active::before {
+  content: ""; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px;
+  background: var(--bima-blue); border-radius: 0 var(--bima-radius-sm) var(--bima-radius-sm) 0;
+}
+/* On a dark navy sidebar (app shells) */
+.bima-navitem--on-navy { color: var(--bima-text-on-navy); }
+.bima-navitem--on-navy:hover { background: rgba(255, 255, 255, 0.08); color: var(--bima-text-inverse); }
+.bima-navitem--on-navy.is-active, .bima-navitem--on-navy[aria-current="page"] {
+  background: rgba(151, 204, 231, 0.14); color: var(--bima-sky); font-weight: var(--bima-font-semibold);
+}
+.bima-navitem--on-navy.is-active::before { background: var(--bima-sky); }
+
+/* Marketing pill navbar (floating shell) */
+.bima-navbar {
+  background: var(--bima-navy); color: var(--bima-text-inverse); border-radius: var(--bima-radius-shell);
+  padding: var(--bima-space-4) var(--bima-space-8); display: flex; align-items: center; justify-content: space-between; gap: var(--bima-space-6);
+  box-shadow: var(--bima-shadow-card);
+}
+.bima-navbar__brand { display: inline-flex; align-items: center; gap: var(--bima-space-3); font-family: var(--bima-font-heading); font-weight: var(--bima-font-bold); font-size: var(--bima-text-large); color: var(--bima-text-inverse); text-decoration: none; }
+.bima-navbar__brand:hover { text-decoration: none; }
+.bima-navbar__links { display: none; align-items: center; gap: var(--bima-space-1); }
+@media (min-width: 64rem) { .bima-navbar__links { display: flex; } }
+.bima-navbar__links a {
+  font-family: var(--bima-font-nav); letter-spacing: 0.005em;
+  color: rgba(255,255,255,0.88);
+  font-size: var(--bima-text-small);
+  font-weight: var(--bima-font-medium);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  transition: color var(--bima-duration-fast), background var(--bima-duration-fast);
+}
+.bima-navbar__links a:hover { color: var(--bima-text-inverse); background: rgba(255,255,255,0.1); text-decoration: none; }
+.bima-navbar__links a[aria-current="page"], .bima-navbar__links a.is-active { color: var(--bima-sky); }
+.bima-navbar__actions { display: inline-flex; align-items: center; gap: var(--bima-space-3); }
+
+/* ===========================================================================
+   10. NAV  &  TABS
+   =========================================================================== */
+.bima-nav { display: flex; flex-wrap: wrap; gap: var(--bima-space-1); list-style: none; margin: 0; padding: 0; }
+.bima-nav__link {
+  display: block; padding: var(--bima-space-2) var(--bima-space-3); border-radius: var(--bima-radius-md);
+  font-family: var(--bima-font-nav); font-size: var(--bima-text-small); font-weight: var(--bima-font-medium); color: var(--bima-text-secondary); text-decoration: none; cursor: pointer;
+}
+.bima-nav__link:hover { background: var(--bima-state-hover); color: var(--bima-text-primary); text-decoration: none; }
+.bima-nav__link.is-active, .bima-nav__link[aria-current="page"] { background: var(--bima-state-selected); color: var(--bima-state-selected-text); font-weight: var(--bima-font-semibold); }
+.bima-nav--pills .bima-nav__link.is-active { background: var(--bima-navy); color: var(--bima-text-inverse); }
+
+.bima-tabs { display: flex; gap: var(--bima-space-4); border-bottom: 1px solid var(--bima-border-default); }
+.bima-tab {
+  appearance: none; background: none; border: 0; margin-bottom: -1px;
+  padding: var(--bima-space-3) var(--bima-space-1); border-bottom: 2px solid transparent;
+  font-family: var(--bima-font-tab); font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold); color: var(--bima-text-muted); cursor: pointer;
+}
+.bima-tab:hover { color: var(--bima-text-primary); }
+.bima-tab.is-active, .bima-tab[aria-selected="true"] { color: var(--bima-text-link); border-bottom-color: var(--bima-blue); font-weight: var(--bima-font-semibold); }
+.bima-tab:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; border-radius: var(--bima-radius-sm); }
+.bima-tabpanel { display: none; padding-top: var(--bima-space-4); }
+.bima-tabpanel.is-active { display: block; }
+
+/* ===========================================================================
+   11. BREADCRUMB
+   =========================================================================== */
+.bima-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: var(--bima-space-2); list-style: none; margin: 0; padding: 0; font-size: var(--bima-text-small); }
+.bima-breadcrumb__item { display: flex; align-items: center; gap: var(--bima-space-2); color: var(--bima-text-muted); }
+.bima-breadcrumb__item:not(:first-child)::before { content: ""; width: 0.4rem; height: 0.4rem; border-top: 1.5px solid var(--bima-border-strong); border-right: 1.5px solid var(--bima-border-strong); transform: rotate(45deg); }
+.bima-breadcrumb__item a { color: var(--bima-text-link); text-decoration: none; }
+.bima-breadcrumb__item a:hover { text-decoration: underline; }
+.bima-breadcrumb__item[aria-current="page"] { color: var(--bima-text-primary); font-weight: var(--bima-font-medium); }
+
+/* ===========================================================================
+   12. PAGINATION
+   =========================================================================== */
+.bima-pagination { display: inline-flex; gap: var(--bima-space-1); list-style: none; margin: 0; padding: 0; }
+.bima-page {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: var(--bima-control-md); height: var(--bima-control-md); padding: 0 var(--bima-space-3);
+  border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-md);
+  background: var(--bima-surface-card); color: var(--bima-text-secondary); font-size: var(--bima-text-small); text-decoration: none; cursor: pointer;
+  transition: background-color var(--bima-duration-fast), color var(--bima-duration-fast), border-color var(--bima-duration-fast);
+}
+.bima-page:hover { background: var(--bima-state-hover); color: var(--bima-text-primary); border-color: var(--bima-border-strong); text-decoration: none; }
+.bima-page.is-active { background: var(--bima-navy); border-color: var(--bima-navy); color: var(--bima-text-inverse); }
+.bima-page.is-disabled { opacity: 0.5; pointer-events: none; }
+
+/* ===========================================================================
+   13. DROPDOWN  (toggle via bima.js: .is-open on the menu)
+   =========================================================================== */
+.bima-dropdown { position: relative; display: inline-block; }
+.bima-dropdown__menu {
+  position: absolute; top: calc(100% + var(--bima-space-2)); left: 0; z-index: var(--bima-z-dropdown);
+  min-width: 11rem; padding: var(--bima-space-2); margin: 0;
+  background: var(--bima-surface-card); border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-lg); box-shadow: var(--bima-shadow-dropdown); display: none;
+}
+.bima-dropdown__menu.is-open { display: block; animation: bima-fade-in var(--bima-duration-fast) var(--bima-ease-enter); }
+.bima-dropdown__menu--end { left: auto; right: 0; }
+.bima-dropdown__item {
+  display: flex; align-items: center; gap: var(--bima-space-2); width: 100%;
+  padding: var(--bima-space-2) var(--bima-space-3); border: 0; background: none; border-radius: var(--bima-radius-md);
+  font: inherit; font-size: var(--bima-text-small); color: var(--bima-text-secondary);
+  text-align: left; text-decoration: none; cursor: pointer;
+}
+.bima-dropdown__item:hover, .bima-dropdown__item:focus-visible { background: var(--bima-state-hover); color: var(--bima-text-primary); outline: none; }
+.bima-dropdown__divider { height: 1px; margin: var(--bima-space-2) calc(-1 * var(--bima-space-2)); background: var(--bima-border-default); }
+.bima-dropdown__header { padding: var(--bima-space-1) var(--bima-space-3); font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-semibold); text-transform: uppercase; letter-spacing: var(--bima-tracking-wide); color: var(--bima-text-muted); }
+
+/* ===========================================================================
+   14. LIST GROUP
+   =========================================================================== */
+.bima-list-group { display: flex; flex-direction: column; border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-lg); overflow: hidden; background: var(--bima-surface-card); }
+.bima-list-group__item { display: flex; align-items: center; gap: var(--bima-space-3); padding: var(--bima-space-3) var(--bima-space-4); border-bottom: 1px solid var(--bima-border-default); color: var(--bima-text-primary); font-size: var(--bima-text-small); text-decoration: none; }
+.bima-list-group__item:last-child { border-bottom: 0; }
+a.bima-list-group__item, button.bima-list-group__item { cursor: pointer; width: 100%; text-align: left; background: none; border-left: 0; border-right: 0; border-top: 0; font: inherit; transition: background-color var(--bima-duration-fast); }
+a.bima-list-group__item:hover, button.bima-list-group__item:hover { background: var(--bima-state-hover); text-decoration: none; }
+.bima-list-group__item.is-active { background: var(--bima-state-selected); color: var(--bima-state-selected-text); font-weight: var(--bima-font-semibold); }
+
+/* ===========================================================================
+   15. ACCORDION  (collapse via bima.js: .is-open on the panel)
+   =========================================================================== */
+.bima-accordion { border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-lg); overflow: hidden; background: var(--bima-surface-card); }
+.bima-accordion__item + .bima-accordion__item { border-top: 1px solid var(--bima-border-default); }
+.bima-accordion__header {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--bima-space-3); width: 100%;
+  padding: var(--bima-space-4) var(--bima-space-5); border: 0; background: none;
+  font: inherit; font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); text-align: left; cursor: pointer;
+}
+.bima-accordion__header:hover { background: var(--bima-state-hover); }
+.bima-accordion__header::after { content: ""; width: 0.5rem; height: 0.5rem; flex-shrink: 0; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform var(--bima-duration-fast) var(--bima-ease-standard); }
+.bima-accordion__header[aria-expanded="true"]::after { transform: rotate(-135deg); }
+.bima-accordion__header[aria-expanded="true"] { color: var(--bima-text-link); }
+.bima-accordion__panel { max-height: 0; overflow: hidden; transition: max-height var(--bima-duration-standard) var(--bima-ease-standard); }
+.bima-accordion__panel.is-open { max-height: 40rem; }
+.bima-accordion__body { padding: 0 var(--bima-space-5) var(--bima-space-5); font-size: var(--bima-text-small); color: var(--bima-text-secondary); line-height: var(--bima-leading-normal); }
+
+/* ===========================================================================
+   16. PROGRESS
+   =========================================================================== */
+.bima-progress { height: 0.5rem; background: var(--bima-border-default); border-radius: var(--bima-radius-full); overflow: hidden; }
+.bima-progress--lg { height: 0.75rem; }
+.bima-progress__bar { height: 100%; width: 0; background: var(--bima-blue); border-radius: inherit; transition: width var(--bima-duration-standard) var(--bima-ease-standard); }
+.bima-progress__bar--success { background: var(--bima-success); }
+.bima-progress__bar--warning { background: var(--bima-warning); }
+.bima-progress__bar--error   { background: var(--bima-error); }
+.bima-progress__bar--striped { background-image: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent); background-size: 1rem 1rem; }
+
+/* Steps — a labelled multi-step progress indicator ("Step 1 of 2"), as used in
+   the BIMA registration header. The segmented track fills as the user advances.
+   Pairs cleanly on navy surfaces (`.bima-steps--on-navy`) or light cards. */
+.bima-steps { display: flex; flex-direction: column; gap: var(--bima-space-2); }
+.bima-steps__label {
+  font-family: var(--bima-font-section); font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-secondary); text-align: center;
+}
+.bima-steps__track { display: flex; gap: var(--bima-space-2); }
+.bima-steps__seg {
+  flex: 1 1 0; height: 0.25rem; border-radius: var(--bima-radius-full);
+  background: var(--bima-border-default);
+  transition: background-color var(--bima-duration-standard) var(--bima-ease-standard);
+}
+.bima-steps__seg.is-active, .bima-steps__seg.is-done { background: var(--bima-sky); }
+.bima-steps__seg.is-done { background: var(--bima-blue); }
+.bima-steps--on-navy .bima-steps__label { color: var(--bima-text-on-navy); }
+.bima-steps--on-navy .bima-steps__seg { background: rgba(255, 255, 255, 0.22); }
+.bima-steps--on-navy .bima-steps__seg.is-active,
+.bima-steps--on-navy .bima-steps__seg.is-done { background: var(--bima-sky); }
+
+/* ===========================================================================
+   17. LOADING — spinner / skeleton / placeholder
+   =========================================================================== */
+.bima-spinner {
+  display: inline-block; width: 1.25rem; height: 1.25rem; vertical-align: middle;
+  border: 2px solid var(--bima-border-default); border-top-color: var(--bima-blue);
+  border-radius: 50%; animation: bima-spin 0.7s linear infinite;
+}
+.bima-spinner--sm { width: 1rem; height: 1rem; border-width: 2px; }
+.bima-spinner--lg { width: 2rem; height: 2rem; border-width: 3px; }
+.bima-skeleton {
+  background: linear-gradient(90deg, var(--bima-surface-page) 25%, var(--bima-state-hover-strong) 37%, var(--bima-surface-page) 63%);
+  background-size: 400% 100%; border-radius: var(--bima-radius-sm);
+  animation: bima-shimmer 1.5s linear infinite;
+}
+.bima-placeholder { display: inline-block; min-height: 1em; vertical-align: middle; background: var(--bima-border-strong); border-radius: var(--bima-radius-sm); opacity: 0.55; }
+.bima-placeholder--glow { animation: bima-pulse 1.6s ease-in-out infinite; }
+
+/* ===========================================================================
+   18. CLOSE BUTTON
+   =========================================================================== */
+.bima-close { position: relative; width: var(--bima-control-sm); height: var(--bima-control-sm); border: 0; background: transparent; border-radius: var(--bima-radius-md); color: var(--bima-text-muted); cursor: pointer; flex-shrink: 0; }
+.bima-close:hover { background: var(--bima-state-hover); color: var(--bima-text-primary); }
+.bima-close:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; }
+.bima-close:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.bima-close::before, .bima-close::after { content: ""; position: absolute; top: 50%; left: 50%; width: 14px; height: 2px; background: currentColor; border-radius: 1px; }
+.bima-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+.bima-close::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* ===========================================================================
+   19. TOAST
+   =========================================================================== */
+.bima-toast-region { position: fixed; bottom: var(--bima-space-6); right: var(--bima-space-6); z-index: var(--bima-z-toast); display: flex; flex-direction: column; gap: var(--bima-space-3); }
+.bima-toast {
+  display: flex; align-items: flex-start; gap: var(--bima-space-3);
+  width: 21rem; padding: var(--bima-space-4);
+  background: var(--bima-surface-card); border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-lg); box-shadow: var(--bima-shadow-dropdown);
+  font-size: var(--bima-text-small);
+  animation: bima-slide-up var(--bima-duration-standard) var(--bima-ease-enter);
+}
+.bima-toast__icon  { width: 1.5rem; height: 1.5rem; flex-shrink: 0; display: grid; place-content: center; border-radius: 50%; }
+.bima-toast__icon--info    { background: var(--bima-info-bg);    color: var(--bima-info-text); }
+.bima-toast__icon--success { background: var(--bima-success-bg); color: var(--bima-success-text); }
+.bima-toast__icon--warning { background: var(--bima-warning-bg); color: var(--bima-warning-text); }
+.bima-toast__icon--error   { background: var(--bima-error-bg);   color: var(--bima-error-text); }
+.bima-toast__body  { flex: 1; min-width: 0; }
+.bima-toast__title { display: block; font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); }
+.bima-toast__message { color: var(--bima-text-muted); margin: 2px 0 0; }
+@media (max-width: 40rem) { .bima-toast-region { left: var(--bima-space-4); right: var(--bima-space-4); bottom: var(--bima-space-4); } .bima-toast { width: 100%; } }
+
+/* ===========================================================================
+   20. MODAL
+   =========================================================================== */
+.bima-modal__backdrop { position: fixed; inset: 0; background: var(--bima-surface-overlay); z-index: var(--bima-z-backdrop);
+  animation: bima-fade-in var(--bima-duration-fast) var(--bima-ease-enter); }
+.bima-offcanvas__backdrop { position: fixed; inset: 0; background: var(--bima-surface-overlay); z-index: var(--bima-z-backdrop);
+  animation: bima-fade-in var(--bima-duration-fast) var(--bima-ease-enter); }
+.bima-modal {
+  display: none;   /* hidden until bima.js adds .is-open */
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(92vw, 32rem); max-height: 85vh; overflow-y: auto;
+  background: var(--bima-surface-card); border-radius: var(--bima-radius-2xl);
+  box-shadow: var(--bima-shadow-modal); padding: var(--bima-space-6); z-index: var(--bima-z-modal);
+}
+.bima-modal.is-open { display: block; animation: bima-pop-in var(--bima-duration-standard) var(--bima-ease-enter); }
+.bima-modal--sm    { width: min(92vw, 24rem); }
+.bima-modal--wide,
+.bima-modal--lg    { width: min(94vw, 48rem); }
+.bima-modal--xl    { width: min(95vw, 60rem); }
+.bima-modal--scrollable .bima-modal__body { max-height: 52vh; overflow-y: auto; }
+.bima-modal__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--bima-space-3); }
+.bima-modal__title { font-family: var(--bima-font-heading); font-size: var(--bima-text-h4); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); margin-bottom: var(--bima-space-1); }
+.bima-modal__desc  { font-size: var(--bima-text-small); color: var(--bima-text-muted); line-height: var(--bima-leading-normal); margin-bottom: var(--bima-space-5); }
+.bima-modal__footer { display: flex; justify-content: flex-end; gap: var(--bima-space-2); margin-top: var(--bima-space-6); }
+
+/* ===========================================================================
+   21. OFFCANVAS
+   =========================================================================== */
+.bima-offcanvas {
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: var(--bima-z-modal);
+  display: flex; flex-direction: column; width: var(--bima-sidebar-mobile); max-width: 100%;
+  background: var(--bima-surface-card); box-shadow: var(--bima-shadow-modal);
+  transform: translateX(-100%); visibility: hidden;
+  transition: transform var(--bima-duration-standard) var(--bima-ease-standard), visibility var(--bima-duration-standard);
+}
+.bima-offcanvas.is-open { transform: none; visibility: visible; }
+.bima-offcanvas--end { left: auto; right: 0; transform: translateX(100%); }
+.bima-offcanvas__header { display: flex; align-items: center; justify-content: space-between; padding: var(--bima-space-4) var(--bima-space-5); border-bottom: 1px solid var(--bima-border-default); }
+.bima-offcanvas__title { font-family: var(--bima-font-heading); font-size: var(--bima-text-h4); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); }
+.bima-offcanvas__body { padding: var(--bima-space-5); overflow-y: auto; flex: 1; }
+
+/* ===========================================================================
+   22. TOOLTIP & POPOVER
+   =========================================================================== */
+.bima-tooltip {
+  display: inline-block; background: var(--bima-ink); color: var(--bima-text-inverse);
+  font-size: var(--bima-text-caption); font-weight: var(--bima-font-medium); padding: var(--bima-space-1) var(--bima-space-2);
+  border-radius: var(--bima-radius-sm); max-width: 15rem; box-shadow: var(--bima-shadow-dropdown); z-index: var(--bima-z-tooltip);
+  word-wrap: break-word; pointer-events: none;
+}
+/* Tooltip arrow */
+.bima-tooltip::after {
+  content: ""; position: absolute; width: 0.5rem; height: 0.5rem;
+  background: var(--bima-ink); transform: rotate(45deg);
+}
+/* Placement: top (default) */
+.bima-tooltip[data-bima-placement="top"]::after { bottom: -0.25rem; left: 50%; margin-left: -0.25rem; }
+/* Placement: bottom */
+.bima-tooltip[data-bima-placement="bottom"]::after { top: -0.25rem; left: 50%; margin-left: -0.25rem; }
+/* Placement: left */
+.bima-tooltip[data-bima-placement="left"]::after { right: -0.25rem; top: 50%; margin-top: -0.25rem; }
+/* Placement: right */
+.bima-tooltip[data-bima-placement="right"]::after { left: -0.25rem; top: 50%; margin-top: -0.25rem; }
+.bima-popover { position: absolute; z-index: var(--bima-z-popover); max-width: 20rem; background: var(--bima-surface-card); border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-lg); box-shadow: var(--bima-shadow-dropdown); }
+.bima-popover__title { padding: var(--bima-space-3) var(--bima-space-4); border-bottom: 1px solid var(--bima-border-default); font-weight: var(--bima-font-semibold); font-size: var(--bima-text-small); color: var(--bima-text-primary); }
+.bima-popover__body  { padding: var(--bima-space-4); font-size: var(--bima-text-small); color: var(--bima-text-secondary); }
+
+/* ===========================================================================
+   23. AVATAR
+   =========================================================================== */
+.bima-avatar { display: inline-flex; align-items: center; justify-content: center; width: var(--bima-control-md); height: var(--bima-control-md); border-radius: var(--bima-radius-full); background: var(--bima-blue); color: var(--bima-text-inverse); font-weight: var(--bima-font-semibold); font-size: var(--bima-text-small); overflow: hidden; flex-shrink: 0; }
+.bima-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.bima-avatar--sm { width: var(--bima-control-sm); height: var(--bima-control-sm); font-size: var(--bima-text-caption); }
+.bima-avatar--lg { width: var(--bima-control-lg); height: var(--bima-control-lg); font-size: var(--bima-text-base); }
+.bima-avatar--xl { width: 4rem; height: 4rem; font-size: var(--bima-text-h4); }
+.bima-avatar-group { display: inline-flex; }
+.bima-avatar-group .bima-avatar { border: 2px solid var(--bima-surface-card); }
+.bima-avatar-group .bima-avatar:not(:first-child) { margin-left: -0.625rem; }
+
+/* ===========================================================================
+   24. EMPTY STATE
+   =========================================================================== */
+.bima-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: var(--bima-space-12) var(--bima-space-6);
+  border: 1.5px dashed var(--bima-border-strong); border-radius: var(--bima-radius-xl);
+  background: var(--bima-surface-card);
+}
+.bima-empty__icon  { color: var(--bima-text-muted); margin-bottom: var(--bima-space-3); }
+.bima-empty__title { font-family: var(--bima-font-heading); font-size: var(--bima-text-h4); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); margin-bottom: var(--bima-space-1); }
+.bima-empty__desc  { font-size: var(--bima-text-small); color: var(--bima-text-muted); max-width: 22rem; line-height: var(--bima-leading-normal); margin-bottom: var(--bima-space-4); }
+
+/* Ratio + stretched-link helpers live in helpers.css (single source of truth). */
+
+/* ===========================================================================
+   26. MARKETING — hero · section · feature
+   =========================================================================== */
+.bima-hero {
+  position: relative; overflow: hidden;
+  background: var(--bima-gradient-hero); color: var(--bima-text-inverse);
+  border-radius: var(--bima-radius-2xl);
+  padding: var(--bima-space-24) var(--bima-space-8) var(--bima-space-20);
+}
+.bima-hero h1, .bima-hero h2 { color: var(--bima-text-inverse); }
+.bima-hero__eyebrow { display: inline-flex; align-items: center; gap: var(--bima-space-2); background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--bima-radius-full); padding: 0.25em 0.875em; font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold); letter-spacing: var(--bima-tracking-wide); margin-bottom: var(--bima-space-5); }
+.bima-hero__title { font-family: var(--bima-font-heading); font-size: var(--bima-text-display); font-weight: var(--bima-font-bold); line-height: 1.1; letter-spacing: var(--bima-tracking-tight); margin: 0 0 var(--bima-space-4); }
+.bima-hero__lede  { font-size: var(--bima-text-large); color: var(--bima-text-on-navy); max-width: 38rem; line-height: var(--bima-leading-relaxed); margin: 0 0 var(--bima-space-8); }
+
+.bima-section { padding-block: var(--bima-space-20); }
+.bima-section--sm { padding-block: var(--bima-space-12); }
+.bima-section__head { max-width: 44rem; margin-inline: auto; text-align: center; margin-bottom: var(--bima-space-12); }
+.bima-section__eyebrow { font-family: var(--bima-font-section); font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold); letter-spacing: var(--bima-tracking-wide); text-transform: uppercase; color: var(--bima-text-link); margin-bottom: var(--bima-space-2); }
+.bima-section__title { font-family: var(--bima-font-heading); font-size: clamp(1.75rem, 3vw, var(--bima-text-h1)); font-weight: var(--bima-font-bold); color: var(--bima-text-primary); line-height: var(--bima-leading-tight); margin: 0 0 var(--bima-space-3); }
+.bima-section__lede  { font-size: var(--bima-text-large); color: var(--bima-text-muted); line-height: var(--bima-leading-relaxed); margin: 0; }
+
+.bima-feature { display: flex; flex-direction: column; gap: var(--bima-space-3); }
+.bima-feature__icon { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: var(--bima-radius-lg); background: var(--bima-sky-muted); color: var(--bima-text-primary); margin-bottom: var(--bima-space-1); }
+.bima-feature__icon svg { width: 1.5rem; height: 1.5rem; }
+.bima-feature__title { font-family: var(--bima-font-heading); font-size: var(--bima-text-large); font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); margin: 0; }
+.bima-feature__desc  { font-size: var(--bima-text-small); color: var(--bima-text-muted); line-height: var(--bima-leading-normal); margin: 0; }
+
+/* ===========================================================================
+   27. KEYFRAMES  (disabled under prefers-reduced-motion via variables.css)
+   =========================================================================== */
+@keyframes bima-spin    { to { transform: rotate(360deg); } }
+@keyframes bima-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bima-pop-in  { from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes bima-slide-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bima-shimmer  { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes bima-pulse    { 50% { opacity: 0.2; } }
+
+/* ===========================================================================
+   28. TEXT & UTILITY HELPERS (component-scoped; full set in utilities)
+   =========================================================================== */
+.bima-display { font-family: var(--bima-font-display); font-weight: var(--bima-font-semibold); }
+.bima-mono    { font-family: var(--bima-font-mono); }
+
+/* ========== src/css/carousel.css ========== */
+/**
+ * BIMA Design System — Carousel
+ *
+ * A slide-cycling component with indicator dots, prev/next controls, and
+ * optional captions. Works with bima.js (data-bima-ride="carousel").
+ */
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+.bima-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--bima-radius-xl);
+}
+
+/* ─── Inner container ────────────────────────────────────────────────────── */
+.bima-carousel__inner {
+  display: flex;
+  transition: transform var(--bima-duration-moderate) var(--bima-ease-standard);
+  will-change: transform;
+}
+
+.bima-carousel--fade .bima-carousel__inner {
+  display: block;
+}
+
+/* ─── Slide ──────────────────────────────────────────────────────────────── */
+.bima-carousel__item {
+  flex: 0 0 100%;
+  min-width: 0;
+  position: relative;
+  display: block;
+}
+
+.bima-carousel--fade .bima-carousel__item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--bima-duration-moderate) var(--bima-ease-standard);
+}
+.bima-carousel--fade .bima-carousel__item.is-active {
+  position: relative;
+  opacity: 1;
+  z-index: 1;
+}
+
+.bima-carousel__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ─── Controls (prev / next) ─────────────────────────────────────────────── */
+.bima-carousel__control-prev,
+.bima-carousel__control-next {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--bima-text-inverse);
+  opacity: 0.5;
+  transition: opacity var(--bima-duration-fast);
+}
+.bima-carousel__control-prev  { left: 0; }
+.bima-carousel__control-next  { right: 0; }
+.bima-carousel__control-prev:hover,
+.bima-carousel__control-next:hover { opacity: 0.9; }
+.bima-carousel__control-prev:focus-visible,
+.bima-carousel__control-next:focus-visible {
+  outline: 2px solid var(--bima-interactive-focus);
+  outline-offset: 2px;
+}
+
+.bima-carousel__control-icon {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bima-carousel__control-prev .bima-carousel__control-icon::after {
+  content: "";
+  width: 0.6rem; height: 0.6rem;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateX(1px);
+}
+.bima-carousel__control-next .bima-carousel__control-icon::after {
+  content: "";
+  width: 0.6rem; height: 0.6rem;
+  border-right: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: rotate(45deg) translateX(-1px);
+}
+
+/* ─── Indicators ─────────────────────────────────────────────────────────── */
+.bima-carousel__indicators {
+  position: absolute;
+  bottom: var(--bima-space-3);
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: var(--bima-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bima-carousel__indicators [data-bima-slide-to] {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0;
+  cursor: pointer;
+  transition: background-color var(--bima-duration-fast), transform var(--bima-duration-fast);
+}
+.bima-carousel__indicators [data-bima-slide-to]:hover {
+  background: rgba(255, 255, 255, 0.75);
+  transform: scale(1.2);
+}
+.bima-carousel__indicators .is-active {
+  background: var(--bima-text-inverse);
+  transform: scale(1.3);
+}
+
+/* ─── Caption ────────────────────────────────────────────────────────────── */
+.bima-carousel__caption {
+  position: absolute;
+  bottom: var(--bima-space-10);
+  left: 15%;
+  right: 15%;
+  z-index: 1;
+  padding: var(--bima-space-4);
+  color: var(--bima-text-inverse);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.bima-carousel__caption h5 {
+  font-size: var(--bima-text-h4);
+  font-weight: var(--bima-font-bold);
+  margin-bottom: var(--bima-space-1);
+}
+.bima-carousel__caption p {
+  font-size: var(--bima-text-small);
+  opacity: 0.9;
+}
+
+/* ─── Dark variant ───────────────────────────────────────────────────────── */
+.bima-carousel--dark .bima-carousel__control-prev,
+.bima-carousel--dark .bima-carousel__control-next {
+  color: var(--bima-text-primary);
+}
+.bima-carousel--dark .bima-carousel__indicators [data-bima-slide-to] {
+  background: rgba(0, 0, 0, 0.3);
+}
+.bima-carousel--dark .bima-carousel__indicators .is-active {
+  background: var(--bima-text-primary);
+}
+.bima-carousel--dark .bima-carousel__caption {
+  color: var(--bima-text-primary);
+  text-shadow: none;
+}
+
+/* ========== src/css/helpers.css ========== */
+/**
+ * BIMA Design System — Helpers
+ *
+ * Bootstrap-equivalent helper classes, all using --bima-* tokens.
+ * Sections:
+ *   1. Clearfix
+ *   2. Color + Background combos
+ *   3. Colored links
+ *   4. Focus ring
+ *   5. Icon link
+ *   6. Position helpers
+ *   7. Ratio
+ *   8. Stacks (hstack / vstack)
+ *   9. Stretched link
+ *  10. Text truncation
+ *  11. Vertical rule
+ *  12. Visually hidden
+ */
+
+/* ===========================================================================
+   1. CLEARFIX
+   =========================================================================== */
+.bima-clearfix::after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+/* ===========================================================================
+   2. COLOR + BACKGROUND  (text + bg token pairs)
+   =========================================================================== */
+.bima-text-bg-navy    { color: var(--bima-text-inverse) !important; background-color: var(--bima-navy) !important; }
+.bima-text-bg-blue    { color: var(--bima-text-inverse) !important; background-color: var(--bima-blue) !important; }
+.bima-text-bg-sky     { color: var(--bima-navy)         !important; background-color: var(--bima-sky)  !important; }
+.bima-text-bg-success { color: var(--bima-success-text) !important; background-color: var(--bima-success-bg) !important; }
+.bima-text-bg-warning { color: var(--bima-warning-text) !important; background-color: var(--bima-warning-bg) !important; }
+.bima-text-bg-error   { color: var(--bima-error-text)   !important; background-color: var(--bima-error-bg)   !important; }
+.bima-text-bg-info    { color: var(--bima-info-text)    !important; background-color: var(--bima-info-bg)    !important; }
+.bima-text-bg-neutral { color: var(--bima-neutral-text) !important; background-color: var(--bima-neutral-bg) !important; }
+
+/* ===========================================================================
+   3. COLORED LINKS  (hover-aware, accessible colour pairs)
+   =========================================================================== */
+.bima-link-navy    { color: var(--bima-navy) !important; text-decoration-color: var(--bima-navy); }
+.bima-link-navy:hover    { color: var(--bima-navy-hover) !important; }
+.bima-link-blue    { color: var(--bima-blue) !important; text-decoration-color: var(--bima-blue); }
+.bima-link-blue:hover    { color: var(--bima-blue-hover) !important; }
+.bima-link-success { color: var(--bima-success-text) !important; text-decoration-color: var(--bima-success-text); }
+.bima-link-success:hover { color: var(--bima-success) !important; }
+.bima-link-warning { color: var(--bima-warning-text) !important; text-decoration-color: var(--bima-warning-text); }
+.bima-link-warning:hover { color: var(--bima-warning) !important; }
+.bima-link-error   { color: var(--bima-error-text) !important; text-decoration-color: var(--bima-error-text); }
+.bima-link-error:hover   { color: var(--bima-error) !important; }
+.bima-link-muted   { color: var(--bima-text-muted) !important; text-decoration-color: var(--bima-text-muted); }
+.bima-link-muted:hover   { color: var(--bima-text-secondary) !important; }
+.bima-link-body    { color: var(--bima-text-primary) !important; text-decoration-color: var(--bima-text-primary); }
+
+/* Underline offset for improved readability */
+.bima-link-underline        { text-underline-offset: 0.25em; }
+.bima-link-underline-navy   { text-decoration-color: var(--bima-navy) !important; }
+.bima-link-underline-blue   { text-decoration-color: var(--bima-blue) !important; }
+.bima-link-opacity-10       { --bima-link-opacity: .1; }
+.bima-link-opacity-25       { --bima-link-opacity: .25; }
+.bima-link-opacity-50       { --bima-link-opacity: .5; }
+.bima-link-opacity-75       { --bima-link-opacity: .75; }
+
+/* ===========================================================================
+   4. FOCUS RING  (visible focus indicator, configurable via custom props)
+   =========================================================================== */
+:root {
+  --bima-focus-ring-width:  3px;
+  --bima-focus-ring-opacity: 0.25;
+  --bima-focus-ring-color:  var(--bima-blue);
+  --bima-focus-ring-x: 0;
+  --bima-focus-ring-y: 0;
+  --bima-focus-ring-blur: 0;
+}
+
+.bima-focus-ring:focus,
+.bima-focus-ring:focus-visible {
+  outline: 0;
+  box-shadow:
+    var(--bima-focus-ring-x) var(--bima-focus-ring-y) var(--bima-focus-ring-blur)
+    var(--bima-focus-ring-width) rgba(50, 92, 168, var(--bima-focus-ring-opacity));
+}
+
+/* ===========================================================================
+   5. ICON LINK  (horizontally aligned icon + text pair)
+   =========================================================================== */
+.bima-icon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bima-space-2);
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  backface-visibility: hidden;
+}
+.bima-icon-link > svg,
+.bima-icon-link > .bima-icon {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  transition: transform var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-icon-link:hover > svg,
+.bima-icon-link:hover > .bima-icon {
+  transform: translate3d(0.25em, 0, 0);
+}
+.bima-icon-link-hover > svg,
+.bima-icon-link-hover > .bima-icon {
+  transform: translate3d(0.25em, 0, 0);
+}
+
+/* ===========================================================================
+   6. POSITION HELPERS
+   =========================================================================== */
+.bima-fixed-top     { position: fixed;  top: 0; right: 0; left: 0; z-index: var(--bima-z-header); }
+.bima-fixed-bottom  { position: fixed;  bottom: 0; right: 0; left: 0; z-index: var(--bima-z-header); }
+.bima-sticky-top    { position: sticky; top: 0; z-index: var(--bima-z-sticky); }
+.bima-sticky-bottom { position: sticky; bottom: 0; z-index: var(--bima-z-sticky); }
+
+/* ===========================================================================
+   7. RATIO  (aspect-ratio boxes — single source of truth for the framework)
+   Accepts both `.bima-ratio-16x9` and `.bima-ratio--16x9` naming.
+   =========================================================================== */
+.bima-ratio        { position: relative; width: 100%; }
+.bima-ratio::before {
+  content: "";
+  display: block;
+  padding-top: var(--bima-aspect-ratio, 56.25%);
+}
+.bima-ratio > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.bima-ratio-1x1,  .bima-ratio--1x1   { --bima-aspect-ratio: 100%; }
+.bima-ratio-4x3,  .bima-ratio--4x3   { --bima-aspect-ratio: 75%; }
+.bima-ratio-16x9, .bima-ratio--16x9  { --bima-aspect-ratio: 56.25%; }
+.bima-ratio-21x9, .bima-ratio--21x9  { --bima-aspect-ratio: 42.857143%; }
+
+/* ===========================================================================
+   8. STACKS  (hstack + vstack flex utilities)
+   =========================================================================== */
+.bima-vstack {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-self: stretch;
+}
+.bima-hstack {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: stretch;
+}
+
+/* Divider for stacks */
+.bima-vstack .bima-vr  { align-self: stretch; width: 1px; }
+.bima-hstack .bima-vr  { height: 100%; }
+
+/* ===========================================================================
+   9. STRETCHED LINK  (makes an ancestor fill its link hitbox)
+   =========================================================================== */
+.bima-stretched-link::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+}
+
+/* ===========================================================================
+   10. TEXT TRUNCATION
+   =========================================================================== */
+.bima-text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Multi-line truncation (webkit-only, gracefully degrades) */
+.bima-text-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.bima-text-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* ===========================================================================
+   11. VERTICAL RULE
+   =========================================================================== */
+.bima-vr {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  min-height: 1em;
+  background-color: currentColor;
+  opacity: 0.25;
+}
+
+/* ===========================================================================
+   12. VISUALLY HIDDEN  (accessible but not visible)
+   =========================================================================== */
+.bima-visually-hidden,
+.bima-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.bima-visually-hidden-focusable:not(:focus):not(:focus-within),
+.bima-sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ========== tokens/bima-utilities.css ========== */
+/**
+ * BIMA Design System — Utility Classes
+ *
+ * A tokenized utility layer modeled on Bootstrap 5.3 but scoped entirely to
+ * --bima-* custom properties. All classes are prefixed `bima-` to prevent
+ * collisions with Tailwind, Bootstrap, or other utility frameworks.
+ *
+ * Rules:
+ *  - Every value references a --bima-* token (no raw hex, no arbitrary px).
+ *  - !important is applied on all utilities, matching Bootstrap's intent.
+ *  - Responsive variants are generated for display and text-align only,
+ *    at the md (768px) and lg (1024px) breakpoints, using min-width queries.
+ *
+ * Load order: variables.css → reboot.css → bima-utilities.css → components
+ */
+
+
+/* ============================================================================
+   1. DISPLAY
+   ============================================================================ */
+
+.bima-d-none         { display: none         !important; }
+.bima-d-block        { display: block        !important; }
+.bima-d-inline       { display: inline       !important; }
+.bima-d-inline-block { display: inline-block !important; }
+.bima-d-flex         { display: flex         !important; }
+.bima-d-inline-flex  { display: inline-flex  !important; }
+.bima-d-grid         { display: grid         !important; }
+
+
+/* ============================================================================
+   2. FLEXBOX
+   ============================================================================ */
+
+/* Direction */
+.bima-flex-row    { flex-direction: row    !important; }
+.bima-flex-column { flex-direction: column !important; }
+
+/* Wrap */
+.bima-flex-wrap   { flex-wrap: wrap   !important; }
+.bima-flex-nowrap { flex-wrap: nowrap !important; }
+
+/* Justify content */
+.bima-justify-start   { justify-content: flex-start    !important; }
+.bima-justify-center  { justify-content: center        !important; }
+.bima-justify-end     { justify-content: flex-end      !important; }
+.bima-justify-between { justify-content: space-between !important; }
+.bima-justify-around  { justify-content: space-around  !important; }
+
+/* Align items */
+.bima-items-start    { align-items: flex-start !important; }
+.bima-items-center   { align-items: center     !important; }
+.bima-items-end      { align-items: flex-end   !important; }
+.bima-items-stretch  { align-items: stretch    !important; }
+.bima-items-baseline { align-items: baseline   !important; }
+
+/* Flex shorthand */
+.bima-flex-1       { flex: 1 1 0%   !important; }
+.bima-flex-grow-0  { flex-grow: 0   !important; }
+.bima-flex-grow-1  { flex-grow: 1   !important; }
+.bima-flex-shrink-0 { flex-shrink: 0 !important; }
+
+
+/* ============================================================================
+   3. GAP
+   ============================================================================ */
+
+.bima-gap-1 { gap: var(--bima-space-1) !important; }
+.bima-gap-2 { gap: var(--bima-space-2) !important; }
+.bima-gap-3 { gap: var(--bima-space-3) !important; }
+.bima-gap-4 { gap: var(--bima-space-4) !important; }
+.bima-gap-5 { gap: var(--bima-space-5) !important; }
+.bima-gap-6 { gap: var(--bima-space-6) !important; }
+.bima-gap-8 { gap: var(--bima-space-8) !important; }
+
+
+/* ============================================================================
+   4. SPACING — MARGIN & PADDING
+   Full matrix: sides {all, t, b, s, e, x, y} × steps {0,1,2,3,4,5,6,8,10,12,16}
+   Naming mirrors Bootstrap 5: m/p + side + - + step
+   ============================================================================ */
+
+/* --- Margin all sides --- */
+.bima-m-0  { margin: 0                      !important; }
+.bima-m-1  { margin: var(--bima-space-1)    !important; }
+.bima-m-2  { margin: var(--bima-space-2)    !important; }
+.bima-m-3  { margin: var(--bima-space-3)    !important; }
+.bima-m-4  { margin: var(--bima-space-4)    !important; }
+.bima-m-5  { margin: var(--bima-space-5)    !important; }
+.bima-m-6  { margin: var(--bima-space-6)    !important; }
+.bima-m-8  { margin: var(--bima-space-8)    !important; }
+.bima-m-10 { margin: var(--bima-space-10)   !important; }
+.bima-m-12 { margin: var(--bima-space-12)   !important; }
+.bima-m-16 { margin: var(--bima-space-16)   !important; }
+
+/* --- Margin top --- */
+.bima-mt-0  { margin-top: 0                    !important; }
+.bima-mt-1  { margin-top: var(--bima-space-1)  !important; }
+.bima-mt-2  { margin-top: var(--bima-space-2)  !important; }
+.bima-mt-3  { margin-top: var(--bima-space-3)  !important; }
+.bima-mt-4  { margin-top: var(--bima-space-4)  !important; }
+.bima-mt-5  { margin-top: var(--bima-space-5)  !important; }
+.bima-mt-6  { margin-top: var(--bima-space-6)  !important; }
+.bima-mt-8  { margin-top: var(--bima-space-8)  !important; }
+.bima-mt-10 { margin-top: var(--bima-space-10) !important; }
+.bima-mt-12 { margin-top: var(--bima-space-12) !important; }
+.bima-mt-16 { margin-top: var(--bima-space-16) !important; }
+
+/* --- Margin bottom --- */
+.bima-mb-0  { margin-bottom: 0                    !important; }
+.bima-mb-1  { margin-bottom: var(--bima-space-1)  !important; }
+.bima-mb-2  { margin-bottom: var(--bima-space-2)  !important; }
+.bima-mb-3  { margin-bottom: var(--bima-space-3)  !important; }
+.bima-mb-4  { margin-bottom: var(--bima-space-4)  !important; }
+.bima-mb-5  { margin-bottom: var(--bima-space-5)  !important; }
+.bima-mb-6  { margin-bottom: var(--bima-space-6)  !important; }
+.bima-mb-8  { margin-bottom: var(--bima-space-8)  !important; }
+.bima-mb-10 { margin-bottom: var(--bima-space-10) !important; }
+.bima-mb-12 { margin-bottom: var(--bima-space-12) !important; }
+.bima-mb-16 { margin-bottom: var(--bima-space-16) !important; }
+
+/* --- Margin start (inline-start / left) --- */
+.bima-ms-0  { margin-inline-start: 0                    !important; }
+.bima-ms-1  { margin-inline-start: var(--bima-space-1)  !important; }
+.bima-ms-2  { margin-inline-start: var(--bima-space-2)  !important; }
+.bima-ms-3  { margin-inline-start: var(--bima-space-3)  !important; }
+.bima-ms-4  { margin-inline-start: var(--bima-space-4)  !important; }
+.bima-ms-5  { margin-inline-start: var(--bima-space-5)  !important; }
+.bima-ms-6  { margin-inline-start: var(--bima-space-6)  !important; }
+.bima-ms-8  { margin-inline-start: var(--bima-space-8)  !important; }
+.bima-ms-10 { margin-inline-start: var(--bima-space-10) !important; }
+.bima-ms-12 { margin-inline-start: var(--bima-space-12) !important; }
+.bima-ms-16 { margin-inline-start: var(--bima-space-16) !important; }
+
+/* --- Margin end (inline-end / right) --- */
+.bima-me-0  { margin-inline-end: 0                    !important; }
+.bima-me-1  { margin-inline-end: var(--bima-space-1)  !important; }
+.bima-me-2  { margin-inline-end: var(--bima-space-2)  !important; }
+.bima-me-3  { margin-inline-end: var(--bima-space-3)  !important; }
+.bima-me-4  { margin-inline-end: var(--bima-space-4)  !important; }
+.bima-me-5  { margin-inline-end: var(--bima-space-5)  !important; }
+.bima-me-6  { margin-inline-end: var(--bima-space-6)  !important; }
+.bima-me-8  { margin-inline-end: var(--bima-space-8)  !important; }
+.bima-me-10 { margin-inline-end: var(--bima-space-10) !important; }
+.bima-me-12 { margin-inline-end: var(--bima-space-12) !important; }
+.bima-me-16 { margin-inline-end: var(--bima-space-16) !important; }
+
+/* --- Margin horizontal (x = left + right) --- */
+.bima-mx-0  { margin-right: 0;                    margin-left: 0                    !important; }
+.bima-mx-1  { margin-right: var(--bima-space-1);  margin-left: var(--bima-space-1)  !important; }
+.bima-mx-2  { margin-right: var(--bima-space-2);  margin-left: var(--bima-space-2)  !important; }
+.bima-mx-3  { margin-right: var(--bima-space-3);  margin-left: var(--bima-space-3)  !important; }
+.bima-mx-4  { margin-right: var(--bima-space-4);  margin-left: var(--bima-space-4)  !important; }
+.bima-mx-5  { margin-right: var(--bima-space-5);  margin-left: var(--bima-space-5)  !important; }
+.bima-mx-6  { margin-right: var(--bima-space-6);  margin-left: var(--bima-space-6)  !important; }
+.bima-mx-8  { margin-right: var(--bima-space-8);  margin-left: var(--bima-space-8)  !important; }
+.bima-mx-10 { margin-right: var(--bima-space-10); margin-left: var(--bima-space-10) !important; }
+.bima-mx-12 { margin-right: var(--bima-space-12); margin-left: var(--bima-space-12) !important; }
+.bima-mx-16 { margin-right: var(--bima-space-16); margin-left: var(--bima-space-16) !important; }
+.bima-mx-auto { margin-right: auto; margin-left: auto !important; }
+
+/* --- Margin vertical (y = top + bottom) --- */
+.bima-my-0  { margin-top: 0;                    margin-bottom: 0                    !important; }
+.bima-my-1  { margin-top: var(--bima-space-1);  margin-bottom: var(--bima-space-1)  !important; }
+.bima-my-2  { margin-top: var(--bima-space-2);  margin-bottom: var(--bima-space-2)  !important; }
+.bima-my-3  { margin-top: var(--bima-space-3);  margin-bottom: var(--bima-space-3)  !important; }
+.bima-my-4  { margin-top: var(--bima-space-4);  margin-bottom: var(--bima-space-4)  !important; }
+.bima-my-5  { margin-top: var(--bima-space-5);  margin-bottom: var(--bima-space-5)  !important; }
+.bima-my-6  { margin-top: var(--bima-space-6);  margin-bottom: var(--bima-space-6)  !important; }
+.bima-my-8  { margin-top: var(--bima-space-8);  margin-bottom: var(--bima-space-8)  !important; }
+.bima-my-10 { margin-top: var(--bima-space-10); margin-bottom: var(--bima-space-10) !important; }
+.bima-my-12 { margin-top: var(--bima-space-12); margin-bottom: var(--bima-space-12) !important; }
+.bima-my-16 { margin-top: var(--bima-space-16); margin-bottom: var(--bima-space-16) !important; }
+
+/* --- Padding all sides --- */
+.bima-p-0  { padding: 0                    !important; }
+.bima-p-1  { padding: var(--bima-space-1)  !important; }
+.bima-p-2  { padding: var(--bima-space-2)  !important; }
+.bima-p-3  { padding: var(--bima-space-3)  !important; }
+.bima-p-4  { padding: var(--bima-space-4)  !important; }
+.bima-p-5  { padding: var(--bima-space-5)  !important; }
+.bima-p-6  { padding: var(--bima-space-6)  !important; }
+.bima-p-8  { padding: var(--bima-space-8)  !important; }
+.bima-p-10 { padding: var(--bima-space-10) !important; }
+.bima-p-12 { padding: var(--bima-space-12) !important; }
+.bima-p-16 { padding: var(--bima-space-16) !important; }
+
+/* --- Padding top --- */
+.bima-pt-0  { padding-top: 0                    !important; }
+.bima-pt-1  { padding-top: var(--bima-space-1)  !important; }
+.bima-pt-2  { padding-top: var(--bima-space-2)  !important; }
+.bima-pt-3  { padding-top: var(--bima-space-3)  !important; }
+.bima-pt-4  { padding-top: var(--bima-space-4)  !important; }
+.bima-pt-5  { padding-top: var(--bima-space-5)  !important; }
+.bima-pt-6  { padding-top: var(--bima-space-6)  !important; }
+.bima-pt-8  { padding-top: var(--bima-space-8)  !important; }
+.bima-pt-10 { padding-top: var(--bima-space-10) !important; }
+.bima-pt-12 { padding-top: var(--bima-space-12) !important; }
+.bima-pt-16 { padding-top: var(--bima-space-16) !important; }
+
+/* --- Padding bottom --- */
+.bima-pb-0  { padding-bottom: 0                    !important; }
+.bima-pb-1  { padding-bottom: var(--bima-space-1)  !important; }
+.bima-pb-2  { padding-bottom: var(--bima-space-2)  !important; }
+.bima-pb-3  { padding-bottom: var(--bima-space-3)  !important; }
+.bima-pb-4  { padding-bottom: var(--bima-space-4)  !important; }
+.bima-pb-5  { padding-bottom: var(--bima-space-5)  !important; }
+.bima-pb-6  { padding-bottom: var(--bima-space-6)  !important; }
+.bima-pb-8  { padding-bottom: var(--bima-space-8)  !important; }
+.bima-pb-10 { padding-bottom: var(--bima-space-10) !important; }
+.bima-pb-12 { padding-bottom: var(--bima-space-12) !important; }
+.bima-pb-16 { padding-bottom: var(--bima-space-16) !important; }
+
+/* --- Padding start (inline-start / left) --- */
+.bima-ps-0  { padding-inline-start: 0                    !important; }
+.bima-ps-1  { padding-inline-start: var(--bima-space-1)  !important; }
+.bima-ps-2  { padding-inline-start: var(--bima-space-2)  !important; }
+.bima-ps-3  { padding-inline-start: var(--bima-space-3)  !important; }
+.bima-ps-4  { padding-inline-start: var(--bima-space-4)  !important; }
+.bima-ps-5  { padding-inline-start: var(--bima-space-5)  !important; }
+.bima-ps-6  { padding-inline-start: var(--bima-space-6)  !important; }
+.bima-ps-8  { padding-inline-start: var(--bima-space-8)  !important; }
+.bima-ps-10 { padding-inline-start: var(--bima-space-10) !important; }
+.bima-ps-12 { padding-inline-start: var(--bima-space-12) !important; }
+.bima-ps-16 { padding-inline-start: var(--bima-space-16) !important; }
+
+/* --- Padding end (inline-end / right) --- */
+.bima-pe-0  { padding-inline-end: 0                    !important; }
+.bima-pe-1  { padding-inline-end: var(--bima-space-1)  !important; }
+.bima-pe-2  { padding-inline-end: var(--bima-space-2)  !important; }
+.bima-pe-3  { padding-inline-end: var(--bima-space-3)  !important; }
+.bima-pe-4  { padding-inline-end: var(--bima-space-4)  !important; }
+.bima-pe-5  { padding-inline-end: var(--bima-space-5)  !important; }
+.bima-pe-6  { padding-inline-end: var(--bima-space-6)  !important; }
+.bima-pe-8  { padding-inline-end: var(--bima-space-8)  !important; }
+.bima-pe-10 { padding-inline-end: var(--bima-space-10) !important; }
+.bima-pe-12 { padding-inline-end: var(--bima-space-12) !important; }
+.bima-pe-16 { padding-inline-end: var(--bima-space-16) !important; }
+
+/* --- Padding horizontal (x = left + right) --- */
+.bima-px-0  { padding-right: 0;                    padding-left: 0                    !important; }
+.bima-px-1  { padding-right: var(--bima-space-1);  padding-left: var(--bima-space-1)  !important; }
+.bima-px-2  { padding-right: var(--bima-space-2);  padding-left: var(--bima-space-2)  !important; }
+.bima-px-3  { padding-right: var(--bima-space-3);  padding-left: var(--bima-space-3)  !important; }
+.bima-px-4  { padding-right: var(--bima-space-4);  padding-left: var(--bima-space-4)  !important; }
+.bima-px-5  { padding-right: var(--bima-space-5);  padding-left: var(--bima-space-5)  !important; }
+.bima-px-6  { padding-right: var(--bima-space-6);  padding-left: var(--bima-space-6)  !important; }
+.bima-px-8  { padding-right: var(--bima-space-8);  padding-left: var(--bima-space-8)  !important; }
+.bima-px-10 { padding-right: var(--bima-space-10); padding-left: var(--bima-space-10) !important; }
+.bima-px-12 { padding-right: var(--bima-space-12); padding-left: var(--bima-space-12) !important; }
+.bima-px-16 { padding-right: var(--bima-space-16); padding-left: var(--bima-space-16) !important; }
+
+/* --- Padding vertical (y = top + bottom) --- */
+.bima-py-0  { padding-top: 0;                    padding-bottom: 0                    !important; }
+.bima-py-1  { padding-top: var(--bima-space-1);  padding-bottom: var(--bima-space-1)  !important; }
+.bima-py-2  { padding-top: var(--bima-space-2);  padding-bottom: var(--bima-space-2)  !important; }
+.bima-py-3  { padding-top: var(--bima-space-3);  padding-bottom: var(--bima-space-3)  !important; }
+.bima-py-4  { padding-top: var(--bima-space-4);  padding-bottom: var(--bima-space-4)  !important; }
+.bima-py-5  { padding-top: var(--bima-space-5);  padding-bottom: var(--bima-space-5)  !important; }
+.bima-py-6  { padding-top: var(--bima-space-6);  padding-bottom: var(--bima-space-6)  !important; }
+.bima-py-8  { padding-top: var(--bima-space-8);  padding-bottom: var(--bima-space-8)  !important; }
+.bima-py-10 { padding-top: var(--bima-space-10); padding-bottom: var(--bima-space-10) !important; }
+.bima-py-12 { padding-top: var(--bima-space-12); padding-bottom: var(--bima-space-12) !important; }
+.bima-py-16 { padding-top: var(--bima-space-16); padding-bottom: var(--bima-space-16) !important; }
+
+
+/* ============================================================================
+   5. TEXT ALIGNMENT
+   ============================================================================ */
+
+.bima-text-start  { text-align: left   !important; }
+.bima-text-center { text-align: center !important; }
+.bima-text-end    { text-align: right  !important; }
+
+
+/* ============================================================================
+   6. FONT WEIGHT
+   ============================================================================ */
+
+.bima-fw-regular  { font-weight: var(--bima-font-regular)  !important; }
+.bima-fw-medium   { font-weight: var(--bima-font-medium)   !important; }
+.bima-fw-semibold { font-weight: var(--bima-font-semibold) !important; }
+.bima-fw-bold     { font-weight: var(--bima-font-bold)     !important; }
+
+
+/* ============================================================================
+   7. FONT SIZE
+   ============================================================================ */
+
+.bima-fs-caption { font-size: var(--bima-text-caption) !important; }
+.bima-fs-label   { font-size: var(--bima-text-label)   !important; }
+.bima-fs-small   { font-size: var(--bima-text-small)   !important; }
+.bima-fs-base    { font-size: var(--bima-text-base)    !important; }
+.bima-fs-large   { font-size: var(--bima-text-large)   !important; }
+.bima-fs-h4      { font-size: var(--bima-text-h4)      !important; }
+.bima-fs-h3      { font-size: var(--bima-text-h3)      !important; }
+.bima-fs-h2      { font-size: var(--bima-text-h2)      !important; }
+.bima-fs-h1      { font-size: var(--bima-text-h1)      !important; }
+.bima-fs-display { font-size: var(--bima-text-display) !important; }
+
+
+/* ============================================================================
+   8. FONT FAMILY  (role-based family tokens)
+   ============================================================================ */
+
+.bima-ff-display    { font-family: var(--bima-font-display)    !important; }
+.bima-ff-heading    { font-family: var(--bima-font-heading)    !important; }
+.bima-ff-heading-sub{ font-family: var(--bima-font-heading-sub)!important; }
+.bima-ff-body       { font-family: var(--bima-font-body)       !important; }
+.bima-ff-label      { font-family: var(--bima-font-label)      !important; }
+.bima-ff-nav        { font-family: var(--bima-font-nav)        !important; }
+.bima-ff-sidebar    { font-family: var(--bima-font-sidebar)    !important; }
+.bima-ff-button     { font-family: var(--bima-font-button, var(--bima-font-body))     !important; }
+.bima-ff-tab        { font-family: var(--bima-font-tab)        !important; }
+.bima-ff-section    { font-family: var(--bima-font-section)    !important; }
+.bima-ff-mono       { font-family: var(--bima-font-mono)       !important; }
+
+
+/* ============================================================================
+   9. TEXT COLOUR
+   ============================================================================ */
+
+.bima-text-primary   { color: var(--bima-text-primary)   !important; }
+.bima-text-secondary { color: var(--bima-text-secondary) !important; }
+.bima-text-muted     { color: var(--bima-text-muted)     !important; }
+.bima-text-inverse   { color: var(--bima-text-inverse)   !important; }
+.bima-text-link      { color: var(--bima-text-link)      !important; }
+.bima-text-success   { color: var(--bima-success-text)   !important; }
+.bima-text-warning   { color: var(--bima-warning-text)   !important; }
+.bima-text-error     { color: var(--bima-error-text)     !important; }
+.bima-text-info      { color: var(--bima-info-text)      !important; }
+
+
+/* ============================================================================
+   10. TEXT TRANSFORM / DECORATION / MISC
+   ============================================================================ */
+
+.bima-text-uppercase  { text-transform: uppercase  !important; }
+.bima-text-lowercase  { text-transform: lowercase  !important; }
+.bima-text-capitalize { text-transform: capitalize !important; }
+.bima-text-nowrap     { white-space: nowrap        !important; }
+
+/* Truncate: single-line text ellipsis */
+.bima-text-truncate {
+  overflow: hidden          !important;
+  text-overflow: ellipsis   !important;
+  white-space: nowrap       !important;
+}
+
+/* Word break for long unbreakable strings */
+.bima-text-break {
+  word-break: break-word    !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Letter-spacing (tracking) */
+.bima-tracking-tight  { letter-spacing: var(--bima-tracking-tight)  !important; }
+.bima-tracking-normal { letter-spacing: var(--bima-tracking-normal) !important; }
+.bima-tracking-wide   { letter-spacing: var(--bima-tracking-wide)   !important; }
+
+
+/* ============================================================================
+   11. BACKGROUND
+   ============================================================================ */
+
+.bima-bg-page    { background-color: var(--bima-surface-page)    !important; }
+.bima-bg-card    { background-color: var(--bima-surface-card)    !important; }
+.bima-bg-navy    { background-color: var(--bima-navy)            !important; }
+.bima-bg-blue    { background-color: var(--bima-blue)            !important; }
+.bima-bg-sky     { background-color: var(--bima-sky)             !important; }
+.bima-bg-mist    { background-color: var(--bima-mist)            !important; }
+.bima-bg-success { background-color: var(--bima-success-bg)      !important; }
+.bima-bg-warning { background-color: var(--bima-warning-bg)      !important; }
+.bima-bg-error   { background-color: var(--bima-error-bg)        !important; }
+.bima-bg-info    { background-color: var(--bima-info-bg)         !important; }
+.bima-bg-neutral { background-color: var(--bima-neutral-bg)      !important; }
+
+
+/* ============================================================================
+   12. BORDER
+   ============================================================================ */
+
+.bima-border       { border: 1px solid var(--bima-border-default) !important; }
+.bima-border-top   { border-top: 1px solid var(--bima-border-default)    !important; }
+.bima-border-bottom { border-bottom: 1px solid var(--bima-border-default) !important; }
+.bima-border-start { border-inline-start: 1px solid var(--bima-border-default) !important; }
+.bima-border-end   { border-inline-end: 1px solid var(--bima-border-default)   !important; }
+.bima-border-0     { border: 0 !important; }
+.bima-border-strong { border: 1px solid var(--bima-border-strong) !important; }
+
+
+/* ============================================================================
+   13. BORDER RADIUS
+   ============================================================================ */
+
+.bima-rounded-0   { border-radius: 0                      !important; }
+.bima-rounded-sm  { border-radius: var(--bima-radius-sm)  !important; }
+.bima-rounded-md  { border-radius: var(--bima-radius-md)  !important; }
+.bima-rounded-lg  { border-radius: var(--bima-radius-lg)  !important; }
+.bima-rounded-xl  { border-radius: var(--bima-radius-xl)  !important; }
+.bima-rounded-2xl { border-radius: var(--bima-radius-2xl) !important; }
+.bima-rounded-pill { border-radius: var(--bima-radius-pill) !important; }
+.bima-rounded-full { border-radius: var(--bima-radius-full) !important; }
+
+
+/* ============================================================================
+   14. SHADOW
+   ============================================================================ */
+
+.bima-shadow-none     { box-shadow: var(--bima-shadow-none)     !important; }
+.bima-shadow-xs       { box-shadow: var(--bima-shadow-xs)       !important; }
+.bima-shadow-sm       { box-shadow: var(--bima-shadow-sm)       !important; }
+.bima-shadow-soft     { box-shadow: var(--bima-shadow-soft)     !important; }
+.bima-shadow-md       { box-shadow: var(--bima-shadow-md)       !important; }
+.bima-shadow-card     { box-shadow: var(--bima-shadow-card)     !important; }
+.bima-shadow-lg       { box-shadow: var(--bima-shadow-lg)       !important; }
+.bima-shadow-xl       { box-shadow: var(--bima-shadow-xl)       !important; }
+.bima-shadow-dropdown { box-shadow: var(--bima-shadow-dropdown) !important; }
+.bima-shadow-modal    { box-shadow: var(--bima-shadow-modal)    !important; }
+
+/* Brand gradient + surface backgrounds */
+.bima-bg-gradient-hero  { background: var(--bima-gradient-hero)  !important; }
+.bima-bg-gradient-navy  { background: var(--bima-gradient-navy)  !important; }
+.bima-bg-gradient-brand { background: var(--bima-gradient-brand) !important; }
+.bima-bg-gradient-sky   { background: var(--bima-gradient-sky)   !important; }
+.bima-bg-subtle         { background-color: var(--bima-surface-subtle) !important; }
+
+/* Brand radii */
+.bima-rounded-bima  { border-radius: var(--bima-radius-bima)  !important; }
+.bima-rounded-shell { border-radius: var(--bima-radius-shell) !important; }
+
+
+/* ============================================================================
+   15. SIZING
+   ============================================================================ */
+
+.bima-w-25   { width: 25%      !important; }
+.bima-w-50   { width: 50%      !important; }
+.bima-w-75   { width: 75%      !important; }
+.bima-w-100  { width: 100%     !important; }
+.bima-w-auto { width: auto     !important; }
+.bima-mw-100 { max-width: 100% !important; }
+.bima-h-100  { height: 100%    !important; }
+.bima-vh-100 { height: 100vh   !important; }
+
+
+/* ============================================================================
+   16. POSITION
+   ============================================================================ */
+
+.bima-position-static   { position: static   !important; }
+.bima-position-relative { position: relative !important; }
+.bima-position-absolute { position: absolute !important; }
+.bima-position-fixed    { position: fixed    !important; }
+.bima-position-sticky   { position: sticky   !important; }
+
+.bima-top-0    { top: 0     !important; }
+.bima-bottom-0 { bottom: 0  !important; }
+.bima-start-0  { left: 0    !important; }
+.bima-end-0    { right: 0   !important; }
+
+.bima-inset-0 {
+  top: 0    !important;
+  right: 0  !important;
+  bottom: 0 !important;
+  left: 0   !important;
+}
+
+
+/* ============================================================================
+   17. OVERFLOW
+   ============================================================================ */
+
+.bima-overflow-auto    { overflow: auto    !important; }
+.bima-overflow-hidden  { overflow: hidden  !important; }
+.bima-overflow-scroll  { overflow: scroll  !important; }
+.bima-overflow-visible { overflow: visible !important; }
+
+
+/* ============================================================================
+   18. OPACITY
+   ============================================================================ */
+
+.bima-opacity-0   { opacity: 0    !important; }
+.bima-opacity-25  { opacity: 0.25 !important; }
+.bima-opacity-50  { opacity: 0.5  !important; }
+.bima-opacity-75  { opacity: 0.75 !important; }
+.bima-opacity-100 { opacity: 1    !important; }
+
+
+/* ============================================================================
+   19. Z-INDEX
+   ============================================================================ */
+
+.bima-z-dropdown { z-index: var(--bima-z-dropdown) !important; }
+.bima-z-header   { z-index: var(--bima-z-header)   !important; }
+.bima-z-modal    { z-index: var(--bima-z-modal)    !important; }
+.bima-z-toast    { z-index: var(--bima-z-toast)    !important; }
+
+
+/* ============================================================================
+   20. OBJECT FIT
+   ============================================================================ */
+
+.bima-object-cover   { object-fit: cover   !important; }
+.bima-object-contain { object-fit: contain !important; }
+
+
+/* ============================================================================
+   21. VISIBILITY & SCREEN READER
+   ============================================================================ */
+
+.bima-invisible {
+  visibility: hidden !important;
+}
+
+/* Full Bootstrap-style screen-reader-only technique */
+.bima-visually-hidden {
+  position: absolute   !important;
+  width: 1px           !important;
+  height: 1px          !important;
+  padding: 0           !important;
+  margin: -1px         !important;
+  overflow: hidden     !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap  !important;
+  border: 0            !important;
+}
+
+/* Visible when focused (for skip-links etc.) */
+.bima-visually-hidden-focusable:not(:focus):not(:focus-within) {
+  position: absolute   !important;
+  width: 1px           !important;
+  height: 1px          !important;
+  padding: 0           !important;
+  margin: -1px         !important;
+  overflow: hidden     !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap  !important;
+  border: 0            !important;
+}
+
+
+/* ============================================================================
+   22. RESPONSIVE VARIANTS — md (min-width: 768px)
+   Covers: display + text-align
+   ============================================================================ */
+
+@media (min-width: 768px) {
+  /* Display */
+  .bima-d-md-none         { display: none         !important; }
+  .bima-d-md-block        { display: block        !important; }
+  .bima-d-md-inline       { display: inline       !important; }
+  .bima-d-md-inline-block { display: inline-block !important; }
+  .bima-d-md-flex         { display: flex         !important; }
+  .bima-d-md-inline-flex  { display: inline-flex  !important; }
+  .bima-d-md-grid         { display: grid         !important; }
+
+  /* Text align */
+  .bima-text-md-start  { text-align: left   !important; }
+  .bima-text-md-center { text-align: center !important; }
+  .bima-text-md-end    { text-align: right  !important; }
+}
+
+
+/* ============================================================================
+   23. RESPONSIVE VARIANTS — lg (min-width: 1024px)
+   Covers: display + text-align
+   ============================================================================ */
+
+@media (min-width: 1024px) {
+  /* Display */
+  .bima-d-lg-none         { display: none         !important; }
+  .bima-d-lg-block        { display: block        !important; }
+  .bima-d-lg-inline       { display: inline       !important; }
+  .bima-d-lg-inline-block { display: inline-block !important; }
+  .bima-d-lg-flex         { display: flex         !important; }
+  .bima-d-lg-inline-flex  { display: inline-flex  !important; }
+  .bima-d-lg-grid         { display: grid         !important; }
+
+  /* Text align */
+  .bima-text-lg-start  { text-align: left   !important; }
+  .bima-text-lg-center { text-align: center !important; }
+  .bima-text-lg-end    { text-align: right  !important; }
+}
+
+/* ========== src/css/extensions.css ========== */
+/**
+ * BIMA Design System — Extensions & Compatibility Layer
+ * ───────────────────────────────────────────────────────────────────────────
+ * This file enriches the framework with:
+ *   1. A fully themed, JS-driven custom <select> (on-brand dropdown list).
+ *   2. New component variants the docs reference (toast colours, modal dialog
+ *      wrappers, pagination items, dismissible alerts, close-on-dark, etc.).
+ *   3. Bootstrap-compatible class aliases (`__addon`, `justify-content-*`,
+ *      `align-items-*`, `text-bg-primary`, …) so markup authored against the
+ *      Bootstrap naming convention "just works" on top of BIMA's native names.
+ *
+ * Everything resolves to the same `--bima-*` tokens as the core framework, so
+ * theming continues to flow from one place.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* ===========================================================================
+   A. CUSTOM SELECT  (themed listbox — enhanced from a native <select> by bima.js)
+   ===========================================================================
+   Markup is generated at runtime. Authoring stays a plain native <select>:
+       <select class="bima-select" data-bima-select> … </select>
+   bima.js wraps it, hides the native control (kept in the DOM for form
+   submission + a11y), and renders the combobox + listbox below. */
+.bima-select-wrap { position: relative; width: 100%; min-width: 7rem; }
+.bima-select-wrap > select.bima-select { /* native kept for form submit, hidden visually */
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.bima-select-display {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--bima-space-2);
+  width: 100%; height: var(--bima-control-md);
+  padding: 0 var(--bima-space-3); padding-inline-end: var(--bima-space-3);
+  font-family: var(--bima-font-body); font-size: var(--bima-text-small);
+  color: var(--bima-text-primary); text-align: start;
+  background: var(--bima-surface-input);
+  border: 1px solid var(--bima-border-strong); border-radius: var(--bima-radius-md);
+  cursor: pointer;
+  transition: border-color var(--bima-duration-fast) var(--bima-ease-standard),
+              box-shadow var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-select-display:hover { border-color: var(--bima-text-muted); }
+.bima-select-display:focus-visible,
+.bima-select-display[aria-expanded="true"] {
+  outline: none; border-color: var(--bima-blue);
+  box-shadow: 0 0 0 3px rgba(50, 92, 168, 0.18);
+}
+.bima-select-display__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bima-select-display--placeholder .bima-select-display__value { color: var(--bima-text-muted); }
+.bima-select-display__caret {
+  flex-shrink: 0; width: 0.625rem; height: 0.625rem; margin-inline-start: auto;
+  border-right: 1.5px solid var(--bima-text-muted); border-bottom: 1.5px solid var(--bima-text-muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-select-display[aria-expanded="true"] .bima-select-display__caret {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+.bima-select-wrap.is-disabled .bima-select-display {
+  background: var(--bima-surface-input-disabled); color: var(--bima-text-disabled);
+  border-color: var(--bima-border-default); cursor: not-allowed;
+}
+/* Verified custom select — mirrors the native .bima-select.is-verified tint. */
+.bima-select-wrap.is-verified .bima-select-display {
+  background: var(--bima-surface-input-filled); border-color: transparent;
+  color: var(--bima-navy); font-weight: var(--bima-font-medium);
+}
+.bima-select-wrap.is-verified .bima-select-display[aria-expanded="true"] { border-color: var(--bima-blue); }
+/* Size variants mirror the native control sizes */
+.bima-select-wrap--sm .bima-select-display { height: var(--bima-control-sm); font-size: var(--bima-text-caption); }
+.bima-select-wrap--lg .bima-select-display { height: var(--bima-control-lg); font-size: var(--bima-text-base); }
+
+.bima-select-menu {
+  position: absolute; top: calc(100% + var(--bima-space-1)); left: 0; right: 0;
+  z-index: var(--bima-z-dropdown);
+  max-height: 16rem; overflow-y: auto; padding: var(--bima-space-1); margin: 0;
+  background: var(--bima-surface-card); border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-lg); box-shadow: var(--bima-shadow-dropdown);
+  display: none; list-style: none;
+  scrollbar-width: thin;
+}
+.bima-select-menu.is-open { display: block; animation: bima-fade-in var(--bima-duration-fast) var(--bima-ease-enter); }
+.bima-select-option {
+  /* 8px option padding + 4px menu padding = 12px, so the option text lines up
+     exactly with the closed control's value (which has 12px / space-3 padding). */
+  display: flex; align-items: center; justify-content: space-between; gap: var(--bima-space-2);
+  padding: var(--bima-space-2); border-radius: var(--bima-radius-md);
+  font-size: var(--bima-text-small); color: var(--bima-text-secondary);
+  cursor: pointer; user-select: none;
+}
+.bima-select-option:hover,
+.bima-select-option.is-active { background: var(--bima-state-hover); color: var(--bima-text-primary); }
+.bima-select-option[aria-selected="true"] { color: var(--bima-blue); font-weight: var(--bima-font-semibold); }
+.bima-select-option[aria-selected="true"]::after {
+  content: ""; flex-shrink: 0; width: 0.35rem; height: 0.6rem;
+  border: solid var(--bima-blue); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.bima-select-option--disabled { color: var(--bima-text-disabled); pointer-events: none; }
+.bima-select-optgroup-label {
+  padding: var(--bima-space-2) var(--bima-space-2) var(--bima-space-1);
+  font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold);
+  letter-spacing: var(--bima-tracking-wide); text-transform: uppercase; color: var(--bima-text-muted);
+}
+/* Robustness: the menu is a <ul> and options are <li>, so prose/content rules
+   such as `.docs-content ul { padding-left: 1.25rem }` or `.docs-content li
+   { margin-bottom: … }` (specificity 0,1,1) would otherwise win over the single
+   class above and indent / space the list. These two-class selectors (0,2,0)
+   out-specify any single-ancestor-class rule, keeping the listbox flush and tidy
+   wherever it is rendered. */
+.bima-select-wrap .bima-select-menu { padding: var(--bima-space-1); margin: 0; list-style: none; }
+.bima-select-wrap .bima-select-option,
+.bima-select-wrap .bima-select-optgroup-label { margin: 0; }
+
+/* Custom select inside a floating-label container.
+   The native <select> is wrapped, so the label sits after .bima-select-wrap.
+   Give the display room for the floated label and float it on focus/value
+   (JS toggles `.is-filled`; `:focus-within` covers focus + open). */
+.bima-float > .bima-select-wrap { width: 100%; }
+.bima-float > .bima-select-wrap .bima-select-display {
+  height: auto; min-height: 3.5rem;
+  padding-top: var(--bima-space-6);
+  padding-bottom: var(--bima-space-2);
+}
+.bima-float > .bima-select-wrap:focus-within + label,
+.bima-float > .bima-select-wrap.is-filled + label {
+  transform: translateY(-1.0625rem) scale(0.857);
+  color: var(--bima-blue);
+}
+
+/* ===========================================================================
+   A2. DATE PICKER  (themed calendar popover — enhanced from an input by bima.js)
+   ===========================================================================
+   Authoring stays a plain input:
+       <input class="bima-input" data-bima-datepicker placeholder="Select date">
+   bima.js makes it read-only, wraps it, adds a calendar trigger + popover, and
+   keeps the ISO value on data-value (+ a hidden mirror when [name] is present). */
+.bima-datepicker-wrap { position: relative; width: 100%; }
+.bima-datepicker-wrap > .bima-input { padding-inline-end: var(--bima-space-10); cursor: pointer; }
+.bima-datepicker-trigger {
+  position: absolute; top: 50%; right: var(--bima-space-2); transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: var(--bima-radius-sm);
+  background: transparent; color: var(--bima-text-muted); cursor: pointer;
+  transition: color var(--bima-duration-fast) var(--bima-ease-standard),
+              background-color var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-datepicker-trigger:hover { color: var(--bima-blue); background: var(--bima-blue-tint); }
+.bima-datepicker-trigger svg { width: 1.125rem; height: 1.125rem; }
+
+.bima-datepicker {
+  position: absolute; top: calc(100% + var(--bima-space-1)); left: 0; z-index: var(--bima-z-dropdown);
+  width: 18rem; max-width: calc(100vw - 2rem); padding: var(--bima-space-3);
+  background: var(--bima-surface-card); border: 1px solid var(--bima-border-default);
+  border-radius: var(--bima-radius-lg); box-shadow: var(--bima-shadow-dropdown);
+  display: none;
+}
+.bima-datepicker.is-open { display: block; animation: bima-fade-in var(--bima-duration-fast) var(--bima-ease-enter); }
+.bima-datepicker__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--bima-space-2); }
+.bima-datepicker__title { font-family: var(--bima-font-heading); font-weight: var(--bima-font-semibold); font-size: var(--bima-text-small); color: var(--bima-navy); }
+.dark .bima-datepicker__title { color: var(--bima-text-primary); }
+.bima-datepicker__nav {
+  display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border: 0; border-radius: var(--bima-radius-md); background: transparent;
+  color: var(--bima-text-secondary); cursor: pointer;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard),
+              color var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-datepicker__nav:hover { background: var(--bima-state-hover); color: var(--bima-navy); }
+.dark .bima-datepicker__nav:hover { color: var(--bima-text-primary); }
+.bima-datepicker__nav svg { width: 1rem; height: 1rem; }
+.bima-datepicker__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.bima-datepicker__dow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold);
+  color: var(--bima-text-muted); padding-block: var(--bima-space-1);
+}
+.bima-datepicker__day {
+  display: inline-flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1;
+  border: 0; border-radius: var(--bima-radius-md); background: transparent;
+  font-family: var(--bima-font-body); font-size: var(--bima-text-small); color: var(--bima-text-primary);
+  cursor: pointer;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard),
+              color var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-datepicker__day:hover { background: var(--bima-state-hover); }
+.bima-datepicker__day--muted { color: var(--bima-text-disabled); }
+.bima-datepicker__day--today { box-shadow: inset 0 0 0 1.5px var(--bima-border-strong); font-weight: var(--bima-font-semibold); }
+.bima-datepicker__day.is-selected,
+.bima-datepicker__day.is-selected:hover { background: var(--bima-blue); color: var(--bima-text-inverse); font-weight: var(--bima-font-semibold); box-shadow: none; }
+.bima-datepicker__day:disabled { color: var(--bima-text-disabled); opacity: 0.45; cursor: not-allowed; background: transparent; }
+.bima-datepicker__footer {
+  display: flex; justify-content: space-between; gap: var(--bima-space-2);
+  margin-top: var(--bima-space-2); padding-top: var(--bima-space-2);
+  border-top: 1px solid var(--bima-border-subtle);
+}
+.bima-datepicker__action {
+  background: transparent; border: 0; padding: var(--bima-space-1) var(--bima-space-2);
+  border-radius: var(--bima-radius-sm); font-family: var(--bima-font-body);
+  font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-link); cursor: pointer;
+}
+.bima-datepicker__action:hover { background: var(--bima-state-selected); color: var(--bima-text-link-hover); }
+
+/* Picker-mode widths: time-only is narrow; datetime keeps the calendar width. */
+.bima-datepicker.bima-picker--time { width: 13rem; }
+
+/* Time-picker columns (data-bima-timepicker, and the time row of datetime). */
+.bima-timepicker { display: flex; gap: var(--bima-space-2); }
+.bima-picker--datetime .bima-timepicker {
+  margin-top: var(--bima-space-3); padding-top: var(--bima-space-3);
+  border-top: 1px solid var(--bima-border-subtle);
+}
+.bima-timepicker__col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.bima-timepicker__head {
+  text-align: center; font-size: var(--bima-text-caption); font-weight: var(--bima-font-bold);
+  letter-spacing: var(--bima-tracking-wide); text-transform: uppercase;
+  color: var(--bima-text-muted); padding-bottom: var(--bima-space-1);
+}
+.bima-timepicker__list {
+  max-height: 11rem; overflow-y: auto; display: flex; flex-direction: column; gap: 2px;
+  scrollbar-width: thin; padding-right: 2px;
+}
+.bima-timepicker__cell {
+  border: 0; background: transparent; border-radius: var(--bima-radius-md);
+  padding: var(--bima-space-1) var(--bima-space-2);
+  font-family: var(--bima-font-body); font-size: var(--bima-text-small);
+  color: var(--bima-text-primary); text-align: center; cursor: pointer;
+  transition: background-color var(--bima-duration-fast) var(--bima-ease-standard),
+              color var(--bima-duration-fast) var(--bima-ease-standard);
+}
+.bima-timepicker__cell:hover { background: var(--bima-state-hover); }
+.bima-timepicker__cell.is-selected { background: var(--bima-blue); color: var(--bima-text-inverse); font-weight: var(--bima-font-semibold); }
+
+/* ===========================================================================
+   B. FORM EXTRAS
+   =========================================================================== */
+/* Input-group text addon (Bootstrap-style alias of .bima-input-group__text) */
+.bima-input-group__addon {
+  display: flex; align-items: center; padding: 0 var(--bima-space-3);
+  background: var(--bima-mist); border: 1px solid var(--bima-border-strong);
+  color: var(--bima-text-muted); font-size: var(--bima-text-small); white-space: nowrap;
+}
+.bima-input-group > .bima-select-wrap { flex: 1 1 auto; width: 1%; min-width: 0; }
+.bima-input-group > .bima-select-wrap .bima-select-display { border-radius: 0; }
+
+/* Native multiple-select: comfortable option spacing + on-brand selection */
+.bima-select[multiple] { padding: var(--bima-space-1); line-height: var(--bima-leading-normal); }
+.bima-select[multiple] option { padding: var(--bima-space-2) var(--bima-space-3); border-radius: var(--bima-radius-sm); margin-bottom: 2px; }
+.bima-select[multiple] option:checked { background: var(--bima-state-selected) linear-gradient(var(--bima-state-selected), var(--bima-state-selected)); color: var(--bima-state-selected-text); font-weight: var(--bima-font-medium); }
+
+/* Inline checks/radios */
+.bima-choice--inline { display: inline-flex; margin-inline-end: var(--bima-space-4); }
+
+/* ===========================================================================
+   C. MODAL — dialog/content wrappers (Bootstrap-style structure)
+   ===========================================================================
+   The core `.bima-modal` IS the box. The optional __dialog / __content layers
+   collapse via display:contents, while the modifiers below resize / scroll. */
+.bima-modal__dialog,
+.bima-modal__content { display: contents; }
+.bima-modal__body { margin: var(--bima-space-4) 0; font-size: var(--bima-text-small); color: var(--bima-text-secondary); line-height: var(--bima-leading-normal); }
+.bima-modal:has(.bima-modal__dialog--sm) { width: min(92vw, 24rem); }
+.bima-modal:has(.bima-modal__dialog--lg) { width: min(94vw, 48rem); }
+.bima-modal:has(.bima-modal__dialog--xl) { width: min(95vw, 60rem); }
+.bima-modal:has(.bima-modal__dialog--scrollable) .bima-modal__body { max-height: 52vh; overflow-y: auto; }
+.bima-modal__dialog--centered { /* core modal is already centered — alias no-op */ }
+
+/* ===========================================================================
+   D. TABS — Bootstrap-style aliases
+   =========================================================================== */
+.bima-tabs__tab {
+  appearance: none; background: none; border: 0; margin-bottom: -1px;
+  padding: var(--bima-space-3) var(--bima-space-1); border-bottom: 2px solid transparent;
+  font-family: var(--bima-font-tab); font-size: var(--bima-text-small); font-weight: var(--bima-font-medium);
+  color: var(--bima-text-muted); cursor: pointer;
+}
+.bima-tabs__tab:hover { color: var(--bima-text-primary); }
+.bima-tabs__tab.is-active, .bima-tabs__tab[aria-selected="true"] {
+  color: var(--bima-blue); border-bottom-color: var(--bima-blue); font-weight: var(--bima-font-semibold);
+}
+.bima-tabs__tab:focus-visible { outline: 2px solid var(--bima-interactive-focus); outline-offset: 2px; border-radius: var(--bima-radius-sm); }
+.bima-tab-content > .bima-tab-pane { display: none; padding-top: var(--bima-space-4); }
+.bima-tab-content > .bima-tab-pane.is-active { display: block; }
+
+/* ===========================================================================
+   E. TOAST — coloured variants + header
+   =========================================================================== */
+.bima-toast--info    { border-inline-start: 3px solid var(--bima-info); }
+.bima-toast--success { border-inline-start: 3px solid var(--bima-success); }
+.bima-toast--warning { border-inline-start: 3px solid var(--bima-warning); }
+.bima-toast--error   { border-inline-start: 3px solid var(--bima-error); }
+.bima-toast__header {
+  display: flex; align-items: center; gap: var(--bima-space-2);
+  font-weight: var(--bima-font-semibold); color: var(--bima-text-primary); margin-bottom: var(--bima-space-1);
+}
+.bima-toast__header .bima-close { margin-inline-start: auto; }
+
+/* ===========================================================================
+   F. PAGINATION — item/link aliases
+   =========================================================================== */
+.bima-pagination__item { display: inline-flex; list-style: none; }
+.bima-pagination__link {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: var(--bima-control-md); height: var(--bima-control-md); padding: 0 var(--bima-space-3);
+  border: 1px solid var(--bima-border-default); border-radius: var(--bima-radius-md);
+  background: var(--bima-surface-card); color: var(--bima-text-secondary);
+  font-size: var(--bima-text-small); text-decoration: none; cursor: pointer;
+  transition: background-color var(--bima-duration-fast), color var(--bima-duration-fast), border-color var(--bima-duration-fast);
+}
+.bima-pagination__link:hover { background: var(--bima-state-hover); color: var(--bima-text-primary); border-color: var(--bima-border-strong); text-decoration: none; }
+.bima-pagination__item.is-active .bima-pagination__link,
+.bima-pagination__link.is-active { background: var(--bima-navy); border-color: var(--bima-navy); color: var(--bima-text-inverse); }
+.bima-pagination__item.is-disabled .bima-pagination__link,
+.bima-pagination__link.is-disabled { opacity: 0.5; pointer-events: none; }
+
+/* ===========================================================================
+   G. CLOSE BUTTON ON DARK
+   =========================================================================== */
+.bima-close--white { color: rgba(255, 255, 255, 0.85); }
+.bima-close--white:hover { background: rgba(255, 255, 255, 0.14); color: var(--bima-text-inverse); }
+
+/* ===========================================================================
+   H. COLLAPSE  (generic — toggled to .is-open by bima.js)
+   =========================================================================== */
+.bima-collapse { overflow: hidden; max-height: 0; transition: max-height var(--bima-duration-standard) var(--bima-ease-standard); }
+.bima-collapse.is-open { max-height: 60rem; }
+.bima-collapse--horizontal { max-height: none; max-width: 0; transition: max-width var(--bima-duration-standard) var(--bima-ease-standard); }
+.bima-collapse--horizontal.is-open { max-width: 60rem; }
+
+/* ===========================================================================
+   I. ACCORDION — header button alias
+   =========================================================================== */
+.bima-accordion__btn {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--bima-space-3); width: 100%;
+  padding: var(--bima-space-4) var(--bima-space-5); border: 0; background: none;
+  font: inherit; font-size: var(--bima-text-small); font-weight: var(--bima-font-semibold);
+  color: var(--bima-text-primary); text-align: left; cursor: pointer;
+}
+.bima-accordion__btn:hover { background: var(--bima-state-hover); }
+.bima-accordion__btn::after { content: ""; width: 0.5rem; height: 0.5rem; flex-shrink: 0; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform var(--bima-duration-fast) var(--bima-ease-standard); }
+.bima-accordion__btn[aria-expanded="true"]::after { transform: rotate(-135deg); }
+.bima-accordion__btn[aria-expanded="true"] { color: var(--bima-blue); }
+
+/* ===========================================================================
+   J. CAROUSEL — control aliases (__control--prev / --next)
+   =========================================================================== */
+.bima-carousel__control {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.75rem; height: 2.75rem; border: 0; border-radius: var(--bima-radius-full);
+  background: rgba(255, 255, 255, 0.85); color: var(--bima-navy); cursor: pointer;
+  box-shadow: var(--bima-shadow-sm); transition: background-color var(--bima-duration-fast);
+}
+.bima-carousel__control:hover { background: var(--bima-surface-card); }
+.bima-carousel__control--prev { left: var(--bima-space-4); }
+.bima-carousel__control--next { right: var(--bima-space-4); }
+
+/* ===========================================================================
+   K. MISC COMPONENT ALIASES / VARIANTS
+   =========================================================================== */
+/* KPI delta alias used on some cards */
+.bima-kpi__change { font-size: var(--bima-text-caption); margin-top: var(--bima-space-1); display: inline-flex; align-items: center; gap: 2px; }
+.bima-kpi__change--up      { color: var(--bima-success-text); }
+.bima-kpi__change--down    { color: var(--bima-error-text); }
+.bima-kpi__change--neutral { color: var(--bima-text-muted); }
+
+/* Badge dot-only variant */
+.bima-badge--dot { width: 0.5rem; height: 0.5rem; min-width: 0; padding: 0; border-radius: var(--bima-radius-full); background: var(--bima-navy); }
+.bima-badge--dot.bima-badge--success { background: var(--bima-success); }
+.bima-badge--dot.bima-badge--warning { background: var(--bima-warning); }
+.bima-badge--dot.bima-badge--error   { background: var(--bima-error); }
+
+/* Dropdown danger item */
+.bima-dropdown__item--danger { color: var(--bima-error-text); }
+.bima-dropdown__item--danger:hover, .bima-dropdown__item--danger:focus-visible { background: var(--bima-error-bg); color: var(--bima-error-text); }
+
+/* List-group action item (alias — interactive rows already get hover via element selector) */
+.bima-list-group__item--action { cursor: pointer; }
+.bima-list-group__item--action:hover { background: var(--bima-state-hover); }
+
+/* Popover header alias */
+.bima-popover__header { padding: var(--bima-space-3) var(--bima-space-4); border-bottom: 1px solid var(--bima-border-default); font-weight: var(--bima-font-semibold); font-size: var(--bima-text-small); color: var(--bima-text-primary); }
+
+/* Alerts: dismissible spacing + inline link */
+.bima-alert--dismissible { padding-inline-end: var(--bima-space-10); position: relative; }
+.bima-alert--dismissible .bima-close { position: absolute; top: var(--bima-space-2); inset-inline-end: var(--bima-space-2); }
+.bima-alert__link { font-weight: var(--bima-font-bold); color: inherit; text-decoration: underline; }
+
+/* Figure caption alignment */
+.bima-figure-caption--end { text-align: end; }
+
+/* Navbar element aliases (the core navbar styles bare <a>; these name them) */
+.bima-navbar__link { color: rgba(255,255,255,0.72); font-size: var(--bima-text-small); text-decoration: none; transition: color var(--bima-duration-fast); }
+.bima-navbar__link:hover { color: var(--bima-text-inverse); }
+.bima-navbar__link.is-active, .bima-navbar__link[aria-current="page"] { color: var(--bima-sky); }
+
+/* Offcanvas start (left) — explicit alias of the default placement */
+.bima-offcanvas--start { left: 0; right: auto; transform: translateX(-100%); }
+.bima-offcanvas--start.is-open { transform: none; }
+
+/* ===========================================================================
+   L. UTILITY ALIASES (Bootstrap-style names → BIMA utilities)
+   =========================================================================== */
+.bima-justify-content-start   { justify-content: flex-start !important; }
+.bima-justify-content-end     { justify-content: flex-end !important; }
+.bima-justify-content-center  { justify-content: center !important; }
+.bima-justify-content-between { justify-content: space-between !important; }
+.bima-justify-content-around  { justify-content: space-around !important; }
+.bima-justify-content-evenly  { justify-content: space-evenly !important; }
+
+.bima-align-items-start    { align-items: flex-start !important; }
+.bima-align-items-end      { align-items: flex-end !important; }
+.bima-align-items-center   { align-items: center !important; }
+.bima-align-items-baseline { align-items: baseline !important; }
+.bima-align-items-stretch  { align-items: stretch !important; }
+
+.bima-align-self-start   { align-self: flex-start !important; }
+.bima-align-self-end     { align-self: flex-end !important; }
+.bima-align-self-center  { align-self: center !important; }
+.bima-align-self-baseline{ align-self: baseline !important; }
+.bima-align-self-stretch { align-self: stretch !important; }
+
+.bima-flex-row          { flex-direction: row !important; }
+.bima-flex-column       { flex-direction: column !important; }
+.bima-flex-wrap         { flex-wrap: wrap !important; }
+.bima-flex-nowrap       { flex-wrap: nowrap !important; }
+.bima-flex-fill         { flex: 1 1 auto !important; }
+.bima-flex-grow-1       { flex-grow: 1 !important; }
+.bima-flex-shrink-0     { flex-shrink: 0 !important; }
+
+/* text-bg-* semantic aliases */
+.bima-text-bg-primary   { color: var(--bima-text-inverse) !important; background-color: var(--bima-navy) !important; }
+.bima-text-bg-secondary { color: var(--bima-text-inverse) !important; background-color: var(--bima-blue) !important; }
+.bima-text-bg-success   { color: var(--bima-success-text) !important; background-color: var(--bima-success-bg) !important; }
+.bima-text-bg-info      { color: var(--bima-info-text) !important; background-color: var(--bima-info-bg) !important; }
+.bima-text-bg-warning   { color: var(--bima-warning-text) !important; background-color: var(--bima-warning-bg) !important; }
+.bima-text-bg-danger    { color: var(--bima-error-text) !important; background-color: var(--bima-error-bg) !important; }
+.bima-text-bg-light     { color: var(--bima-text-primary) !important; background-color: var(--bima-mist) !important; }
+.bima-text-bg-dark      { color: var(--bima-text-inverse) !important; background-color: var(--bima-ink) !important; }
+
+/* colored-link semantic aliases */
+.bima-link-primary   { color: var(--bima-navy) !important; }
+.bima-link-primary:hover   { color: var(--bima-navy-hover) !important; }
+.bima-link-secondary { color: var(--bima-blue) !important; }
+.bima-link-secondary:hover { color: var(--bima-blue-hover) !important; }
+.bima-link-info      { color: var(--bima-info-text) !important; }
+.bima-link-info:hover      { color: var(--bima-blue) !important; }
+.bima-link-danger    { color: var(--bima-error-text) !important; }
+
+/* font-weight alias */
+.bima-fw-normal { font-weight: var(--bima-font-regular) !important; }
+
+/* ===========================================================================
+   M. FLOAT UTILITIES  (paired with .bima-clearfix in helpers.css)
+   =========================================================================== */
+.bima-float-start { float: left !important; }
+.bima-float-end   { float: right !important; }
+.bima-float-none  { float: none !important; }
+@media (min-width: 48rem) {
+  .bima-float-md-start { float: left !important; }
+  .bima-float-md-end   { float: right !important; }
+  .bima-float-md-none  { float: none !important; }
+}
+@media (min-width: 64rem) {
+  .bima-float-lg-start { float: left !important; }
+  .bima-float-lg-end   { float: right !important; }
+  .bima-float-lg-none  { float: none !important; }
+}
+
+/* Rounded side helpers (used by the Borders utility page) */
+.bima-rounded-top    { border-top-left-radius: var(--bima-radius-md) !important; border-top-right-radius: var(--bima-radius-md) !important; }
+.bima-rounded-bottom { border-bottom-left-radius: var(--bima-radius-md) !important; border-bottom-right-radius: var(--bima-radius-md) !important; }
+.bima-rounded-start  { border-top-left-radius: var(--bima-radius-md) !important; border-bottom-left-radius: var(--bima-radius-md) !important; }
+.bima-rounded-end    { border-top-right-radius: var(--bima-radius-md) !important; border-bottom-right-radius: var(--bima-radius-md) !important; }
+
+/* ===========================================================================
+   N. GAP AXIS UTILITIES  (column-gap / row-gap separate from shorthand gap)
+   =========================================================================== */
+.bima-gap-x-1 { column-gap: var(--bima-space-1) !important; }
+.bima-gap-x-2 { column-gap: var(--bima-space-2) !important; }
+.bima-gap-x-3 { column-gap: var(--bima-space-3) !important; }
+.bima-gap-x-4 { column-gap: var(--bima-space-4) !important; }
+.bima-gap-x-5 { column-gap: var(--bima-space-5) !important; }
+.bima-gap-x-6 { column-gap: var(--bima-space-6) !important; }
+.bima-gap-x-8 { column-gap: var(--bima-space-8) !important; }
+.bima-gap-y-1 { row-gap: var(--bima-space-1) !important; }
+.bima-gap-y-2 { row-gap: var(--bima-space-2) !important; }
+.bima-gap-y-3 { row-gap: var(--bima-space-3) !important; }
+.bima-gap-y-4 { row-gap: var(--bima-space-4) !important; }
+.bima-gap-y-5 { row-gap: var(--bima-space-5) !important; }
+.bima-gap-y-6 { row-gap: var(--bima-space-6) !important; }
+.bima-gap-y-8 { row-gap: var(--bima-space-8) !important; }
+
+/* ===========================================================================
+   O. ROW-COLS UTILITIES  (equal-width columns per row on .bima-row)
+   =========================================================================== */
+.bima-row-cols-1 > * { flex: 0 0 100%;          max-width: 100%; }
+.bima-row-cols-2 > * { flex: 0 0 50%;           max-width: 50%; }
+.bima-row-cols-3 > * { flex: 0 0 33.3333%;      max-width: 33.3333%; }
+.bima-row-cols-4 > * { flex: 0 0 25%;           max-width: 25%; }
+.bima-row-cols-5 > * { flex: 0 0 20%;           max-width: 20%; }
+.bima-row-cols-6 > * { flex: 0 0 16.6667%;      max-width: 16.6667%; }
+@media (min-width: 48rem) {
+  .bima-row-cols-md-1 > * { flex: 0 0 100%;     max-width: 100%; }
+  .bima-row-cols-md-2 > * { flex: 0 0 50%;      max-width: 50%; }
+  .bima-row-cols-md-3 > * { flex: 0 0 33.3333%; max-width: 33.3333%; }
+  .bima-row-cols-md-4 > * { flex: 0 0 25%;      max-width: 25%; }
+}
+@media (min-width: 64rem) {
+  .bima-row-cols-lg-1 > * { flex: 0 0 100%;     max-width: 100%; }
+  .bima-row-cols-lg-2 > * { flex: 0 0 50%;      max-width: 50%; }
+  .bima-row-cols-lg-3 > * { flex: 0 0 33.3333%; max-width: 33.3333%; }
+  .bima-row-cols-lg-4 > * { flex: 0 0 25%;      max-width: 25%; }
+}
