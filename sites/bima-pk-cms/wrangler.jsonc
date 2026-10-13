@@ -1,0 +1,41 @@
+{
+	// BIMA Pakistan content (offers, legal documents, About Us) on EmDash.
+	// Production = top level (cdn-pk.milvik.app); staging = env.staging (cdn-pk-stg.milvik.app).
+	// Deploy: `npm run deploy:staging` / `npm run deploy`. Never deploy production without sign-off.
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "bima-pk-cms",
+	"main": "./src/worker.ts",
+	"compatibility_date": "2026-02-24",
+	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": false,
+	// Production resources are created when production is set up; ids are filled in then.
+	"d1_databases": [{ "binding": "DB", "database_name": "bima-cms", "database_id": "TO-BE-CREATED" }],
+	"r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bima-cms-media" }],
+	"worker_loaders": [{ "binding": "LOADER" }],
+	// General maintenance cron: scheduled publishing and housekeeping. Required.
+	"triggers": { "crons": ["* * * * *"] },
+	"env": {
+		"staging": {
+			"name": "bima-pk-cms-stg",
+			// Never public before setup is done behind Cloudflare Access: a fresh EmDash install lets the
+			// first visitor of /_emdash/admin become its owner. Served on cdn-pk-stg.milvik.app once Access
+			// covers /_emdash/*.
+			"workers_dev": false,
+			"preview_urls": false,
+			"d1_databases": [
+				{ "binding": "DB", "database_name": "bima-cms-stg", "database_id": "fac66ce5-946c-48c8-b7b0-6b06978f5dc3" }
+			],
+			"r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bima-cms-stg-media" }],
+			"kv_namespaces": [
+				{ "binding": "CACHE", "id": "ff5b6d8a31034f4a8dcb320394f84735" },
+				// Astro sessions; created by wrangler's auto-provisioning on the first deploy.
+				{ "binding": "SESSION", "id": "37c3f8dc50be4ac6baf9c6ddcec5724b" }
+			],
+			// Sandboxed plugins (legal-document archive) need Worker Loader - Workers Paid plan.
+			// The account is on the free plan (deploy refused with code 10195, 13 Oct 2026); re-enable
+			// once the plan is upgraded.
+			// "worker_loaders": [{ "binding": "LOADER" }],
+			"triggers": { "crons": ["* * * * *"] }
+		}
+	}
+}
