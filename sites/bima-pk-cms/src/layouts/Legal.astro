@@ -1,69 +1,247 @@
 ---
-import { isProductionHost } from "../lib/legal";
+import { DOCUMENTS, isProductionHost, type Locale } from "../lib/legal";
 
 interface Props {
 	title: string;
-	lang: "en" | "ur";
+	lang: Locale;
 	description?: string;
+	/** The document slug this page shows, for the current tab. */
+	current?: string;
 	/** The same page in the other language, for the switch in the header. */
-	alternate?: { href: string; lang: "en" | "ur" };
+	alternate?: { href: string; lang: Locale };
 }
 
-const { title, lang, description, alternate } = Astro.props;
+const { title, lang, description, current, alternate } = Astro.props;
 const dir = lang === "ur" ? "rtl" : "ltr";
 const noindex = !isProductionHost(Astro.url);
-// The BIMA design system (ui.milvik.io), vendored at a pinned version - see public/vendor/bima-ui.
+// Opened from the app (?app=1): the app's own top bar already names the page and has a back
+// button, so the site header and footer are dropped and every in-site link keeps the flag.
+const app = Astro.url.searchParams.get("app") === "1";
+const keep = (href: string) => (app ? `${href}${href.includes("?") ? "&" : "?"}app=1` : href);
+const prefix = lang === "ur" ? "/ur/pk" : "/pk";
 const UI = "/vendor/bima-ui/2.1.0";
+const year = new Date().getUTCFullYear();
+const t = lang === "ur"
+	? { documents: "دستاویزات", operated: "BIMA پاکستان، Milvik AB اور اس کے مقامی شراکت داروں کے زیر انتظام ہے۔", skip: "مواد پر جائیں" }
+	: { documents: "Documents", operated: "BIMA in Pakistan is operated by Milvik AB and its local partners.", skip: "Skip to content" };
 ---
 
 <!doctype html>
-<html lang={lang} dir={dir}>
+<html lang={lang} dir={dir} class={app ? "in-app" : undefined}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="theme-color" content="#0A2261" />
 		<title>{title} — BIMA Pakistan</title>
 		{description && <meta name="description" content={description} />}
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<link rel="icon" type="image/png" sizes="32x32" href={`${UI}/favicon-32x32.png`} />
 		<link rel="icon" type="image/png" sizes="16x16" href={`${UI}/favicon-16x16.png`} />
 		<link rel="apple-touch-icon" href={`${UI}/apple-touch-icon.png`} />
-		<link rel="stylesheet" href={`${UI}/bima.css`} />
-		{lang === "ur" && (
-			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" />
-		)}
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href={lang === "ur"
+				? "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Quicksand:wght@600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
+				: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Quicksand:wght@600;700&display=swap"}
+		/>
 		<style is:global>
-			/* BIMA UI is a light, left-to-right system; only what it lacks is added here. */
-			/* .bima-container already carries the side gutter; it only needs border-box so its
-			   width: 100% plus padding stays inside the screen. */
-			.legal-shell { box-sizing: border-box; padding-block: 16px 48px; display: flex; flex-direction: column; gap: 16px; }
-			.legal-shell *, .legal-shell *::before, .legal-shell *::after { box-sizing: border-box; }
-			.legal-nav { padding: 12px 20px; }
-			.legal-nav img { display: block; }
-			.legal-nav__lang { color: var(--bima-text-inverse); font-weight: var(--bima-font-semibold); text-decoration: none; }
-			.legal-nav__lang:hover, .legal-nav__lang:focus-visible { text-decoration: underline; }
-			html[lang="ur"] body, html[lang="ur"] h1, html[lang="ur"] h2, html[lang="ur"] h3 {
-				font-family: "Noto Nastaliq Urdu", var(--bima-font-body);
+			/* BIMA tokens (ui.milvik.io v2.1.0) in the faces bimamilvik.com sets them in:
+			   Quicksand for display, Manrope for reading. */
+			:root {
+				--navy: #0a2261;
+				--navy-deep: #061845;
+				--navy-ink: #203868;
+				--blue: #325ca8;
+				--sky: #97cce7;
+				--sky-wash: #d5eff9;
+				--mist: #f4f5f7;
+				--rule: #e4e9f0;
+				--rule-strong: #cbd5e0;
+				--text: #18181c;
+				--muted: #4f5d73;
+				--warn-bg: #fff7e6;
+				--warn-text: #b45309;
+				--warn-rule: rgb(250 140 22 / 0.32);
+				--info-bg: #ebf5fb;
+				--info-text: #1e4e8c;
+				--paper: #ffffff;
+				--display: "Quicksand", "Manrope", ui-sans-serif, system-ui, sans-serif;
+				--reading: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+				--shell: min(100% - 2rem, 80rem);
+				--radius-shell: 1.25rem;
+				color-scheme: light;
 			}
-			html[lang="ur"] body { line-height: 2.2; }
-			[dir="rtl"] ul, [dir="rtl"] ol { padding-left: 0; padding-right: var(--bima-space-6); }
-			[dir="rtl"] blockquote { padding-left: 0; border-left: 0; padding-right: var(--bima-space-4); border-right: 3px solid var(--bima-border-strong); }
+			@media (min-width: 64rem) {
+				:root { --shell: min(100% - 6rem, 80rem); --radius-shell: 1.875rem; }
+			}
+			*, *::before, *::after { box-sizing: border-box; }
+			html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scrollbar-color: var(--rule-strong) transparent; }
+			@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+			body {
+				margin: 0;
+				background: var(--paper);
+				color: var(--navy-ink);
+				font: 400 1.0625rem/1.75 var(--reading);
+				-webkit-font-smoothing: antialiased;
+				text-rendering: optimizeLegibility;
+				padding-bottom: env(safe-area-inset-bottom);
+			}
+			html[lang="ur"] body { font-family: "Noto Nastaliq Urdu", var(--reading); line-height: 2.25; }
+			/* English inside an Urdu page (an untranslated document) reads as English. */
+			html[lang="ur"] [lang="en"] { font-family: var(--reading); line-height: 1.75; }
+			::selection { background: var(--sky-wash); color: var(--navy); }
+			a { color: var(--blue); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+			a:hover { color: var(--navy); }
+			:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; border-radius: 4px; }
+			.shell { width: var(--shell); margin-inline: auto; }
+			.skip {
+				position: absolute; inset-inline-start: 1rem; top: -4rem; z-index: 10;
+				background: var(--navy); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem;
+			}
+			.skip:focus { top: 1rem; }
+
+			/* Header: bimamilvik.com's navy pill. One row on desktop; the document tabs wrap to
+			   a second row inside the pill on smaller screens. */
+			.site-header {
+				margin-top: max(1rem, env(safe-area-inset-top));
+				background: var(--navy);
+				color: #fff;
+				border-radius: var(--radius-shell);
+				box-shadow: 0 18px 45px rgb(8 35 101 / 0.12);
+				display: grid;
+				grid-template-columns: auto 1fr auto;
+				grid-template-areas: "brand . lang" "tabs tabs tabs";
+				align-items: center;
+				gap: 0.75rem 1rem;
+				padding: 1rem 1.125rem 0.625rem;
+			}
+			.brand { grid-area: brand; display: inline-flex; padding: 0.25rem 0; }
+			.brand img { display: block; width: 7.5rem; height: auto; }
+			.lang {
+				grid-area: lang;
+				display: inline-flex; align-items: center; justify-content: center;
+				min-height: 2.5rem; padding: 0 1.125rem;
+				border: 1px solid rgb(255 255 255 / 0.4); border-radius: 999px;
+				color: #fff; text-decoration: none; font: 600 0.9375rem/1 var(--reading);
+				transition: background-color 0.2s ease, border-color 0.2s ease;
+			}
+			.lang[lang="ur"] { font-family: "Noto Nastaliq Urdu", var(--reading); line-height: 1.6; padding-top: 0.15rem; }
+			.lang:hover { color: #fff; background: rgb(255 255 255 / 0.1); border-color: rgb(255 255 255 / 0.7); }
+			.tabs {
+				grid-area: tabs;
+				display: flex; gap: 0.25rem;
+				overflow-x: auto; scrollbar-width: none;
+				border-top: 1px solid rgb(255 255 255 / 0.14);
+				margin-inline: -0.375rem; padding: 0.375rem 0.375rem 0;
+			}
+			.tabs::-webkit-scrollbar { display: none; }
+			.tabs a {
+				flex: none;
+				display: inline-flex; align-items: center; min-height: 2.75rem;
+				padding: 0 0.75rem; border-radius: 0.75rem;
+				color: rgb(255 255 255 / 0.72); text-decoration: none;
+				font: 500 0.9375rem/1.2 var(--reading); white-space: nowrap;
+				transition: color 0.2s ease, background-color 0.2s ease;
+			}
+			html[lang="ur"] .tabs a { font-family: "Noto Nastaliq Urdu", var(--reading); line-height: 1.9; }
+			.tabs a:hover { color: #fff; background: rgb(255 255 255 / 0.08); }
+			.tabs a[aria-current="page"] { color: #fff; background: rgb(151 204 231 / 0.18); box-shadow: inset 0 -2px 0 var(--sky); }
+			@media (min-width: 64rem) {
+				.site-header {
+					grid-template-columns: auto 1fr auto;
+					grid-template-areas: "brand tabs lang";
+					padding: 1.375rem 2.25rem;
+					gap: 2rem;
+				}
+				.brand img { width: 9rem; }
+				.tabs { border-top: 0; margin: 0; padding: 0; justify-content: flex-end; gap: 0.5rem; }
+			}
+
+			.site-main { padding-block: 2.5rem 4rem; }
+			.in-app .site-main { padding-block: 1.25rem 2.5rem; }
+			@media (min-width: 64rem) { .site-main { padding-block: 4.5rem 6rem; } }
+
+			/* Footer: the navy panel bimamilvik.com closes every page with. */
+			.site-footer {
+				margin-bottom: max(1rem, env(safe-area-inset-bottom));
+				background: var(--navy);
+				color: rgb(255 255 255 / 0.72);
+				border-radius: var(--radius-shell);
+				padding: 2.5rem 1.5rem 1.5rem;
+				display: grid; gap: 2rem;
+				font-size: 0.9375rem; line-height: 1.6;
+			}
+			.site-footer img { width: 8.5rem; height: auto; display: block; }
+			.site-footer h2 { margin: 0 0 0.875rem; color: #fff; font: 600 0.9375rem/1.2 var(--reading); }
+			html[lang="ur"] .site-footer h2 { font-family: "Noto Nastaliq Urdu", var(--reading); line-height: 1.9; }
+			.site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+			.site-footer a { color: rgb(255 255 255 / 0.72); text-decoration: none; display: inline-block; padding-block: 0.25rem; }
+			.site-footer a:hover { color: #fff; }
+			.site-footer p { margin: 0; max-width: 34rem; }
+			.site-footer .operated { margin-top: 1.25rem; }
+			.site-footer .legal-line { border-top: 1px solid rgb(255 255 255 / 0.14); padding-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between; }
+			@media (min-width: 48rem) {
+				.site-footer { grid-template-columns: 1.6fr 1fr; padding: 3rem 3.625rem 2rem; column-gap: 4rem; }
+				.site-footer .legal-line { grid-column: 1 / -1; }
+			}
+
+			@media print {
+				.site-header, .site-footer, .skip { display: none !important; }
+				body { color: #000; background: #fff; font-size: 11pt; }
+				.site-main { padding: 0; }
+				.shell { width: 100%; }
+			}
 		</style>
 	</head>
 	<body>
-		<div class="bima-container bima-container--md legal-shell">
-			<nav class="bima-navbar legal-nav" aria-label="BIMA Pakistan">
-				<a class="bima-navbar__brand" href={lang === "ur" ? "/ur/pk/about" : "/pk/about"}>
-					<img src={`${UI}/logo-white.png`} height="28" alt="BIMA" />
-				</a>
-				{alternate && (
-					<a class="legal-nav__lang" href={alternate.href} lang={alternate.lang} hreflang={alternate.lang}>
-						{alternate.lang === "ur" ? "اردو" : "English"}
+		<a class="skip" href="#content">{t.skip}</a>
+		{!app && (
+			<div class="shell">
+				<header class="site-header">
+					<a class="brand" href={keep(`${prefix}/about`)}>
+						<img src={`${UI}/bima-logo-full-white.svg`} width="179" height="45" alt="BIMA" />
 					</a>
-				)}
-			</nav>
-			<main>
-				<slot />
-			</main>
-		</div>
+					<nav class="tabs" aria-label={t.documents}>
+						{Object.entries(DOCUMENTS).map(([slug, d]) => (
+							<a href={keep(`${prefix}/${slug}`)} aria-current={slug === current ? "page" : undefined}>
+								{d.label[lang]}
+							</a>
+						))}
+					</nav>
+					{alternate && (
+						<a class="lang" href={keep(alternate.href)} lang={alternate.lang} hreflang={alternate.lang}>
+							{alternate.lang === "ur" ? "اردو" : "English"}
+						</a>
+					)}
+				</header>
+			</div>
+		)}
+		<main id="content" class="site-main shell">
+			<slot />
+		</main>
+		{!app && (
+			<div class="shell">
+				<footer class="site-footer">
+					<div>
+						<img src={`${UI}/bima-logo-full-white.svg`} width="179" height="45" alt="BIMA" />
+						<p class="operated">{t.operated}</p>
+					</div>
+					<div>
+						<h2>{t.documents}</h2>
+						<ul>
+							{Object.entries(DOCUMENTS).map(([slug, d]) => (
+								<li><a href={`${prefix}/${slug}`}>{d.label[lang]}</a></li>
+							))}
+						</ul>
+					</div>
+					<div class="legal-line">
+						<span>© {year} Milvik AB</span>
+						<a href="https://bimamilvik.com/" rel="noopener">bimamilvik.com</a>
+					</div>
+				</footer>
+			</div>
+		)}
 	</body>
 </html>

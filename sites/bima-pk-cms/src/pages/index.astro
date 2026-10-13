@@ -3,15 +3,25 @@ import Legal from "../layouts/Legal.astro";
 import { DOCUMENTS } from "../lib/legal";
 ---
 
-<Legal title="Documents" lang="en">
-	<div class="bima-card">
-		<div class="bima-card__header"><h1 class="bima-card__title">BIMA Pakistan</h1></div>
-		<div class="bima-card__body">
-			<ul>
-				{Object.entries(DOCUMENTS).map(([slug, d]) => (
-					<li><a href={`/pk/${slug}`}>{d.label.en}</a> · <a href={`/ur/pk/${slug}`} lang="ur">{d.label.ur}</a></li>
-				))}
-			</ul>
-		</div>
+<Legal title="Documents" lang="en" alternate={{ href: "/ur/pk/about", lang: "ur" }}>
+	<div class="hub">
+		<h1>BIMA Pakistan</h1>
+		<ul>
+			{Object.entries(DOCUMENTS).map(([slug, d]) => (
+				<li>
+					<a href={`/pk/${slug}`}>{d.label.en}</a>
+					<a href={`/ur/pk/${slug}`} lang="ur">{d.label.ur}</a>
+				</li>
+			))}
+		</ul>
 	</div>
 </Legal>
+
+<style>
+	.hub { max-width: 40rem; }
+	h1 { margin: 0 0 1.5rem; font: 700 clamp(2rem, 1.35rem + 2.8vw, 3.25rem) / 1.08 var(--display); text-transform: uppercase; color: var(--navy); }
+	ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+	li { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--rule); }
+	a { display: inline-flex; align-items: center; min-height: 3.25rem; text-decoration: none; color: var(--navy); font-weight: 600; }
+	a[lang="ur"] { font-family: "Noto Nastaliq Urdu", var(--reading); color: var(--blue); font-weight: 400; }
+</style>

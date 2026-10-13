@@ -1,7 +1,7 @@
 ---
-import { PortableText } from "emdash/ui";
 import Legal from "../layouts/Legal.astro";
 import { DOCUMENTS, isDraft, type LegalPage, type Locale } from "../lib/legal";
+import { renderBody } from "../lib/portable";
 
 interface Props {
 	locale: Locale;
@@ -15,73 +15,277 @@ const market = Astro.params.market;
 const alternate = locale === "ur"
 	? { href: `/${market}/${doc}`, lang: "en" as const }
 	: { href: `/ur/${market}/${doc}`, lang: "ur" as const };
-const showVersion = DOCUMENTS[doc].type !== "ABOUT_US";
+const isConsentDocument = DOCUMENTS[doc].type !== "ABOUT_US";
+const { html, toc } = renderBody(data.body);
+const showToc = toc.length >= 3;
 const effective = data.effective_from
 	? new Intl.DateTimeFormat(locale === "ur" ? "ur-PK" : "en-GB", { dateStyle: "long", timeZone: "UTC" })
 		.format(new Date(data.effective_from))
 	: null;
 const t = locale === "ur"
 	? {
-		draftTitle: "مسودہ — حتمی نہیں",
+		draftTitle: "مسودہ — حتمی نہیں۔",
 		draft: "یہ متن ابھی منظور شدہ نہیں ہے اور تبدیل ہو سکتا ہے۔",
 		fallback: "اس دستاویز کا اردو ترجمہ ابھی دستیاب نہیں ہے۔ انگریزی متن نیچے دیا گیا ہے۔",
 		version: "ورژن",
 		effective: "نافذ از",
+		contents: "اس صفحے پر",
+		print: "پرنٹ یا PDF",
 	}
 	: {
-		draftTitle: "Draft — not final",
+		draftTitle: "Draft — not final.",
 		draft: "This wording has not been approved and may change.",
 		fallback: "",
 		version: "Version",
 		effective: "Effective",
+		contents: "On this page",
+		print: "Print or save as PDF",
 	};
 ---
 
-<Legal title={data.title} lang={locale} alternate={alternate}>
-	<div class="legal-stack">
-		{isDraft(data.notice_version) && (
-			<div class="bima-alert bima-alert--warning" role="note">
-				<div class="bima-alert__content">
-					<div class="bima-alert__title">{t.draftTitle}</div>
-					{t.draft}
-				</div>
-			</div>
-		)}
-		{page.fellBack && (
-			<div class="bima-alert bima-alert--info" role="note">
-				<div class="bima-alert__content">{t.fallback}</div>
-			</div>
-		)}
-		<article class="bima-card" lang={page.locale} dir={page.locale === "ur" ? "rtl" : "ltr"}>
-			<header class="bima-card__header">
-				<h1 class="legal-title">{data.title}</h1>
-				{showVersion && (
-					<p class="bima-card__subtitle legal-meta">
-						{t.version} <bdi dir="ltr">{data.notice_version}</bdi>{effective && <> · {t.effective} {effective}</>}
+<Legal title={data.title} lang={locale} current={doc} alternate={alternate}>
+	<div class:list={["doc", { "doc--toc": showToc }]}>
+		<header class="doc-head">
+			<h1 lang={page.locale}>{data.title}</h1>
+			<div class="doc-meta">
+				{isConsentDocument && (
+					<p>
+						<span>{t.version} <bdi dir="ltr">{data.notice_version}</bdi></span>
+						{effective && <span>{t.effective} {effective}</span>}
 					</p>
 				)}
-			</header>
-			<div class="bima-card__body legal-body">
-				<PortableText value={data.body} />
+				<button class="print" type="button" data-print>
+					<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M5.5 7.5V3h9v4.5" /><rect x="2.5" y="7.5" width="15" height="7" rx="1.5" /><path d="M5.5 12h9v5h-9z" />
+					</svg>
+					{t.print}
+				</button>
 			</div>
-		</article>
+			{isDraft(data.notice_version) && (
+				<p class="notice notice--draft" role="note">
+					<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M10 2.75 1.9 16.5h16.2L10 2.75Z" /><path d="M10 8v3.75" /><path d="M10 14.4v.1" />
+					</svg>
+					<span><strong>{t.draftTitle}</strong> {t.draft}</span>
+				</p>
+			)}
+			{page.fellBack && (
+				<p class="notice notice--info" role="note">
+					<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+						<circle cx="10" cy="10" r="7.75" /><path d="M10 9v4.75" /><path d="M10 6.2v.1" />
+					</svg>
+					<span>{t.fallback}</span>
+				</p>
+			)}
+		</header>
+
+		{showToc && (
+			<nav class="toc" aria-label={t.contents}>
+				<details data-toc>
+					<summary>
+						{t.contents}
+						<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 8 4.5 4.5L14.5 8" /></svg>
+					</summary>
+					<ol lang={page.locale}>
+						{toc.map((item) => <li><a href={`#${item.id}`}>{item.text}</a></li>)}
+					</ol>
+				</details>
+			</nav>
+		)}
+
+		<article class="prose" lang={page.locale} dir={page.locale === "ur" ? "rtl" : "ltr"} set:html={html} />
 	</div>
 </Legal>
 
-<style>
-	.legal-stack { display: flex; flex-direction: column; gap: 16px; }
-	.legal-title { margin: 0 0 var(--bima-space-2); font-size: clamp(1.75rem, 6vw, var(--bima-text-h2, 2rem)); }
-	.legal-meta { margin: 0; font-variant-numeric: tabular-nums; }
-	.legal-body :global(h2) { margin-top: var(--bima-space-8); }
-	.legal-body :global(h3) { margin-top: var(--bima-space-6); }
-	.legal-body :global(p), .legal-body :global(li) { overflow-wrap: anywhere; }
-	.legal-body :global(li + li) { margin-top: var(--bima-space-2); }
-	.legal-body :global(blockquote) {
-		background: var(--bima-surface-muted);
-		border-radius: var(--bima-radius-md);
-		padding-block: var(--bima-space-3);
-		padding-inline-end: var(--bima-space-4);
+<script>
+	// The contents list is a disclosure on small screens and a standing sidebar from 64rem.
+	const details = document.querySelector<HTMLDetailsElement>("[data-toc]");
+	if (details) {
+		const wide = window.matchMedia("(min-width: 64rem)");
+		const sync = () => { details.open = wide.matches; };
+		sync();
+		wide.addEventListener("change", sync);
+		details.querySelectorAll("a").forEach((a) =>
+			a.addEventListener("click", () => { if (!wide.matches) details.open = false; }),
+		);
 	}
-	.legal-body :global(blockquote p) { margin: 0; }
-	.legal-body > :global(:first-child) { margin-top: 0; }
+	document.querySelector("[data-print]")?.addEventListener("click", () => window.print());
+</script>
+
+<style>
+	.doc {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.75rem;
+	}
+	@media (min-width: 64rem) {
+		.doc {
+			grid-template-columns: minmax(0, 68ch);
+			justify-content: center;
+		}
+		.doc--toc {
+			grid-template-columns: 15rem minmax(0, 68ch);
+			grid-template-areas: ". head" "toc body";
+			column-gap: clamp(3rem, 6vw, 6rem);
+			row-gap: 2.5rem;
+			justify-content: center;
+		}
+		.doc--toc .doc-head { grid-area: head; }
+		.doc--toc .toc { grid-area: toc; }
+		.doc--toc .prose { grid-area: body; }
+	}
+
+	.doc-head { display: grid; gap: 1.125rem; }
+	h1 {
+		margin: 0;
+		font: 700 clamp(2rem, 1.35rem + 2.8vw, 3.25rem) / 1.08 var(--display);
+		text-transform: uppercase;
+		letter-spacing: 0.01em;
+		color: var(--navy);
+		text-wrap: balance;
+	}
+	h1:lang(ur) {
+		font-family: "Noto Nastaliq Urdu", var(--display);
+		text-transform: none;
+		font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+		line-height: 1.9;
+	}
+	.doc-meta {
+		display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+		gap: 0.75rem 1.5rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid var(--rule);
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.doc-meta p { margin: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; font-variant-numeric: tabular-nums; }
+	.print {
+		display: inline-flex; align-items: center; gap: 0.5rem;
+		min-height: 2.75rem; padding: 0 1rem;
+		border: 1px solid var(--rule-strong); border-radius: 999px;
+		background: var(--paper); color: var(--navy);
+		font: 600 0.875rem/1 var(--reading);
+		cursor: pointer;
+		transition: border-color 0.2s ease, background-color 0.2s ease;
+	}
+	.print:hover { border-color: var(--navy); background: var(--mist); }
+
+	.notice {
+		margin: 0;
+		display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start;
+		padding: 0.875rem 1rem;
+		border-radius: 0.875rem;
+		font-size: 0.9375rem; line-height: 1.6;
+	}
+	.notice svg { margin-top: 0.1rem; }
+	.notice--draft { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-rule); }
+	.notice--info { background: var(--info-bg); color: var(--info-text); border: 1px solid rgb(30 78 140 / 0.18); }
+
+	.toc summary {
+		list-style: none;
+		display: flex; align-items: center; justify-content: space-between;
+		min-height: 3rem; padding: 0 1rem;
+		border: 1px solid var(--rule); border-radius: 0.875rem;
+		background: var(--mist);
+		color: var(--navy); font: 600 0.9375rem/1 var(--reading);
+		cursor: pointer;
+	}
+	.toc summary::-webkit-details-marker { display: none; }
+	.toc summary svg { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+	.toc details[open] summary svg { transform: rotate(180deg); }
+	.toc ol {
+		list-style: none; margin: 0.5rem 0 0; padding: 0.5rem;
+		border: 1px solid var(--rule); border-radius: 0.875rem;
+		counter-reset: toc;
+	}
+	.toc li { counter-increment: toc; }
+	.toc a {
+		display: flex; gap: 0.75rem; align-items: baseline;
+		padding: 0.625rem 0.625rem; border-radius: 0.625rem;
+		color: var(--navy-ink); text-decoration: none; font-size: 0.9375rem; line-height: 1.4;
+	}
+	.toc a::before { content: counter(toc); color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; min-width: 1.25ch; }
+	.toc a:hover { background: var(--mist); color: var(--navy); }
+	@media (min-width: 64rem) {
+		.toc details { position: sticky; top: 2rem; }
+		.toc summary {
+			pointer-events: none; min-height: auto; padding: 0 0 0.875rem;
+			border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; background: none;
+			font: 700 0.8125rem/1 var(--reading); color: var(--muted); letter-spacing: 0.04em;
+		}
+		.toc summary svg { display: none; }
+		.toc ol { border: 0; padding: 0.5rem 0 0; margin: 0; }
+		.toc a { padding: 0.5rem 0.625rem; margin-inline: -0.625rem; }
+	}
+
+	/* The document itself: one reading column, a heading scale with clear steps, generous
+	   space above each section and tight below it. */
+	.prose { max-width: 68ch; min-width: 0; }
+	.prose :global(> :first-child) { margin-top: 0; }
+	.prose :global(p) { margin: 0 0 1.125em; overflow-wrap: anywhere; }
+	.prose :global(h2) {
+		margin: 2.75rem 0 0.875rem;
+		font: 700 clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem) / 1.2 var(--display);
+		color: var(--navy);
+		text-wrap: balance;
+		scroll-margin-top: 1.5rem;
+	}
+	.prose :global(h2 .anchor) { color: inherit; text-decoration: none; }
+	.prose :global(h2 .anchor::after) {
+		content: "#"; margin-inline-start: 0.4em; color: var(--sky); opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	.prose :global(h2:hover .anchor::after), .prose :global(h2 .anchor:focus-visible::after) { opacity: 1; }
+	.prose :global(h3) {
+		margin: 2rem 0 0.5rem;
+		font: 700 1.0625rem/1.4 var(--reading);
+		color: var(--navy);
+		scroll-margin-top: 1.5rem;
+	}
+	.prose :global(h4) { margin: 1.5rem 0 0.5rem; font: 700 1rem/1.4 var(--reading); color: var(--navy); }
+	.prose :global(strong) { color: var(--navy); font-weight: 700; }
+	.prose :global(ul), .prose :global(ol) { margin: 0 0 1.25em; padding-inline-start: 1.375em; }
+	.prose :global(li) { padding-inline-start: 0.25em; }
+	.prose :global(li + li) { margin-top: 0.5em; }
+	.prose :global(li > ul), .prose :global(li > ol) { margin: 0.5em 0 0; }
+	.prose :global(ul > li::marker) { color: var(--blue); }
+	.prose :global(blockquote) {
+		margin: 0 0 1.5em;
+		padding: 1rem 1.25rem;
+		background: var(--mist);
+		border-radius: 0.875rem;
+		color: var(--muted);
+		font-size: 0.9375rem;
+		line-height: 1.65;
+	}
+	.prose :global(blockquote p) { margin: 0; }
+	.prose :global(code) { font-size: 0.9em; background: var(--mist); padding: 0.1em 0.35em; border-radius: 0.35em; }
+	.prose :global(.legal-flag) {
+		display: inline-block;
+		padding: 0.05em 0.45em;
+		border-radius: 0.4em;
+		background: var(--warn-bg);
+		border: 1px solid var(--warn-rule);
+		color: var(--warn-text);
+		font: 700 0.75em/1.5 var(--reading);
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		vertical-align: 0.1em;
+	}
+	.prose:lang(ur) :global(h2), .prose:lang(ur) :global(h3) { font-family: "Noto Nastaliq Urdu", var(--display); line-height: 1.9; }
+
+	@media print {
+		.toc, .print { display: none !important; }
+		.doc { display: block; }
+		h1 { font-size: 22pt; color: #000; }
+		.doc-meta { color: #000; }
+		.notice { border: 1px solid #000; background: none; color: #000; }
+		.prose { max-width: none; color: #000; }
+		.prose :global(h2) { color: #000; break-after: avoid; }
+		.prose :global(h2 .anchor::after) { content: none; }
+		.prose :global(strong) { color: #000; }
+		.prose :global(blockquote) { border: 1px solid #999; background: none; color: #000; }
+		.prose :global(.legal-flag) { background: none; border-color: #000; color: #000; }
+		.prose :global(li), .prose :global(p) { break-inside: avoid; }
+	}
 </style>

@@ -4,8 +4,13 @@ Astro.response.status = 404;
 ---
 
 <Legal title="Not found" lang="en">
-	<div class="bima-card">
-		<div class="bima-card__header"><h1 class="bima-card__title">Page not found</h1></div>
-		<div class="bima-card__body"><p>The page you're looking for doesn't exist. <a href="/">See all documents</a>.</p></div>
+	<div class="missing">
+		<h1>Page not found</h1>
+		<p>This page doesn't exist. The documents are listed in the menu above, or <a href="/">here</a>.</p>
 	</div>
 </Legal>
+
+<style>
+	.missing { max-width: 40rem; }
+	h1 { margin: 0 0 1rem; font: 700 clamp(2rem, 1.35rem + 2.8vw, 3.25rem) / 1.08 var(--display); text-transform: uppercase; color: var(--navy); }
+</style>
