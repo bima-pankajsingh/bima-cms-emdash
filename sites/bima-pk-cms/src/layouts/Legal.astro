@@ -1,5 +1,5 @@
 ---
-import { DOCUMENTS, isProductionHost, type Locale } from "../lib/legal";
+import { DOCUMENTS, isIndexable, type Locale } from "../lib/legal";
 // Self-hosted, inlined: no third-party connection before text can render in its own face.
 import fontFaces from "../styles/fonts.css?raw";
 
@@ -15,7 +15,7 @@ interface Props {
 
 const { title, lang, description, current, alternate } = Astro.props;
 const dir = lang === "ur" ? "rtl" : "ltr";
-const noindex = !isProductionHost(Astro.url);
+const noindex = !isIndexable();
 // Opened from the app (?app=1): the app's own top bar already names the page and has a back
 // button, so the site header and footer are dropped and every in-site link keeps the flag.
 const app = Astro.url.searchParams.get("app") === "1";

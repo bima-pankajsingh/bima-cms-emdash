@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import { getEmDashCollection } from "emdash";
 
 /** URL segment -> the `country_partner` value documents are stored under. */
@@ -54,7 +55,11 @@ export function isDraft(version: unknown): boolean {
 	return typeof version === "string" && /draft/i.test(version);
 }
 
-/** Staging and preview hosts must not be indexed: they carry unapproved wording. */
-export function isProductionHost(url: URL): boolean {
-	return url.hostname === "cdn-pk.milvik.app";
+/**
+ * Whether search engines may index these pages. Off unless the deployment says so
+ * (SITE_INDEXABLE in wrangler.jsonc): production goes live before its wording is final, and a
+ * hostname check would have let a draft be indexed the moment the domain answered.
+ */
+export function isIndexable(): boolean {
+	return env.SITE_INDEXABLE === "true";
 }

@@ -7,11 +7,27 @@
 	"main": "./src/worker.ts",
 	"compatibility_date": "2026-02-24",
 	"compatibility_flags": ["nodejs_compat"],
+	// Production: cdn-pk.milvik.app, created 13 Oct 2026. Cloudflare Access covers /_emdash/* (app
+	// "bima-pk-cms admin") and was in place before the first deploy - a fresh EmDash install lets the
+	// first visitor of /_emdash/admin become its owner.
 	"workers_dev": false,
-	// Production resources are created when production is set up; ids are filled in then.
-	"d1_databases": [{ "binding": "DB", "database_name": "bima-cms", "database_id": "TO-BE-CREATED" }],
+	"preview_urls": false,
+	"routes": [{ "pattern": "cdn-pk.milvik.app", "custom_domain": true }],
+	// D1 in APAC with read replication on (an account setting, not in this file).
+	"d1_databases": [
+		{ "binding": "DB", "database_name": "bima-cms", "database_id": "96efa203-9b4d-469e-baac-6c61a03e8c3f" }
+	],
 	"r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bima-cms-media" }],
-	"worker_loaders": [{ "binding": "LOADER" }],
+	"kv_namespaces": [
+		{ "binding": "CACHE", "id": "49ff6a4be7e84b30b1bfdf8b6e6d7f6b" },
+		{ "binding": "SESSION", "id": "c71ca855b52f4c128395c38e9c95cff8" }
+	],
+	// Sandboxed plugins need Worker Loader - Workers Paid plan. Off until the plan is upgraded, as on
+	// staging (deploy refused with code 10195 on the free plan).
+	// "worker_loaders": [{ "binding": "LOADER" }],
+	// Search engines may index the documents only once this is "true" - set it at release, when
+	// the wording is final. Until then every host is noindex, production included.
+	"vars": { "SITE_INDEXABLE": "false" },
 	// General maintenance cron: scheduled publishing and housekeeping. Required.
 	"triggers": { "crons": ["* * * * *"] },
 	// No Smart Placement: it forwards every request - cache hits included - to the region it
@@ -30,6 +46,8 @@
 				{ "binding": "DB", "database_name": "bima-cms-stg", "database_id": "fac66ce5-946c-48c8-b7b0-6b06978f5dc3" }
 			],
 			"r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bima-cms-stg-media" }],
+			// Staging is never indexed.
+			"vars": { "SITE_INDEXABLE": "false" },
 			"kv_namespaces": [
 				{ "binding": "CACHE", "id": "ff5b6d8a31034f4a8dcb320394f84735" },
 				// Astro sessions; created by wrangler's auto-provisioning on the first deploy.
