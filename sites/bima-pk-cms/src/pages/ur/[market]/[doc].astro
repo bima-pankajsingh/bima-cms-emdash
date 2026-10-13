@@ -1,0 +1,11 @@
+---
+import LegalDocument from "../../../components/LegalDocument.astro";
+import { findLegalPage } from "../../../lib/legal";
+
+const { market = "", doc = "" } = Astro.params;
+const page = await findLegalPage(market, doc, "ur");
+if (!page) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) for (const hint of page.cacheHints) Astro.cache.set(hint as any);
+---
+
+<LegalDocument locale="ur" doc={doc} page={page} />

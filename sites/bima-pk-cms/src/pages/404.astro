@@ -1,9 +1,9 @@
 ---
-import Base from "../layouts/Base.astro";
+import Legal from "../layouts/Legal.astro";
+Astro.response.status = 404;
 ---
 
-<Base title="Not Found">
-	<h1>Page not found</h1>
-	<p>The page you're looking for doesn't exist.</p>
-	<a href="/">Go home</a>
-</Base>
+<Legal title="Not found" lang="en">
+	<h1 style="font:600 1.6rem/1.2 'Source Serif 4',Georgia,serif;margin:0 0 12px">Page not found</h1>
+	<p>The page you're looking for doesn't exist. <a href="/">See all documents</a>.</p>
+</Legal>

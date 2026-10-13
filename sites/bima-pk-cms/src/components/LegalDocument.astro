@@ -1,0 +1,108 @@
+---
+import { PortableText } from "emdash/ui";
+import Legal from "../layouts/Legal.astro";
+import { DOCUMENTS, isDraft, type LegalPage, type Locale } from "../lib/legal";
+
+interface Props {
+	locale: Locale;
+	doc: string;
+	page: LegalPage;
+}
+
+const { locale, doc, page } = Astro.props;
+
+const data = page.entry.data;
+const showVersion = DOCUMENTS[doc].type !== "ABOUT_US";
+const effective = data.effective_from
+	? new Intl.DateTimeFormat(locale === "ur" ? "ur-PK" : "en-GB", { dateStyle: "long", timeZone: "UTC" })
+		.format(new Date(data.effective_from))
+	: null;
+const t = locale === "ur"
+	? {
+		draft: "مسودہ — حتمی نہیں۔ یہ متن ابھی منظور شدہ نہیں ہے اور تبدیل ہو سکتا ہے۔",
+		fallback: "اس دستاویز کا اردو ترجمہ ابھی دستیاب نہیں ہے۔ انگریزی متن نیچے دیا گیا ہے۔",
+		version: "ورژن",
+		effective: "نافذ از",
+	}
+	: {
+		draft: "Draft — not final. This wording has not been approved and may change.",
+		fallback: "",
+		version: "Version",
+		effective: "Effective",
+	};
+---
+
+<Legal title={data.title} lang={locale}>
+	{isDraft(data.notice_version) && (
+		<p class="draft" role="note"><strong>{t.draft}</strong></p>
+	)}
+	{page.fellBack && <p class="fallback" role="note">{t.fallback}</p>}
+	<article lang={page.locale} dir={page.locale === "ur" ? "rtl" : "ltr"}>
+		<header>
+			<h1>{data.title}</h1>
+			{showVersion && (
+				<p class="meta">
+					<span>{t.version} {data.notice_version}</span>
+					{effective && <span> · {t.effective} {effective}</span>}
+				</p>
+			)}
+		</header>
+		<div class="body">
+			<PortableText value={data.body} />
+		</div>
+	</article>
+</Legal>
+
+<style>
+	.draft {
+		margin: 0 0 20px;
+		padding: 12px 14px;
+		background: var(--draft-ground);
+		color: var(--draft-ink);
+		border: 1px solid var(--draft-rule);
+		border-radius: 6px;
+		font-size: 0.95rem;
+	}
+	.fallback {
+		margin: 0 0 20px;
+		padding: 10px 14px;
+		border-inline-start: 3px solid var(--accent);
+		background: var(--paper);
+		font-size: 0.95rem;
+	}
+	article {
+		background: var(--paper);
+		border: 1px solid var(--rule);
+		border-radius: 8px;
+		padding: 24px 20px 32px;
+	}
+	header { border-bottom: 1px solid var(--rule); padding-bottom: 14px; margin-bottom: 8px; }
+	h1 {
+		font: 600 1.75rem/1.2 "Source Serif 4", Georgia, serif;
+		margin: 0 0 6px;
+		text-wrap: balance;
+	}
+	article[lang="ur"] h1 { font-family: "Noto Nastaliq Urdu", serif; line-height: 1.9; }
+	.meta { margin: 0; color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+	.body :global(h2) {
+		font: 600 1.2rem/1.3 "Source Serif 4", Georgia, serif;
+		margin: 1.8em 0 0.5em;
+		text-wrap: balance;
+	}
+	article[lang="ur"] .body :global(h2) { font-family: "Noto Nastaliq Urdu", serif; line-height: 1.9; }
+	.body :global(p), .body :global(li) { overflow-wrap: anywhere; }
+	.body :global(ul), .body :global(ol) { padding-inline-start: 1.3em; }
+	.body :global(li + li) { margin-top: 0.35em; }
+	.body :global(blockquote) {
+		margin: 1em 0;
+		padding: 10px 14px;
+		background: var(--quote);
+		border-inline-start: 3px solid var(--accent);
+		border-radius: 4px;
+	}
+	.body :global(blockquote p) { margin: 0; }
+	@media (min-width: 640px) {
+		article { padding: 36px 40px 44px; }
+		h1 { font-size: 2rem; }
+	}
+</style>
