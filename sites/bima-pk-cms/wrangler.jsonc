@@ -31,7 +31,7 @@
 	// src/plugins/graph-email.ts. Add GRAPH_TENANT_ID and GRAPH_CLIENT_ID to "vars" (here and in
 	// env.staging) once the Entra app exists; the secret is never in this file:
 	// `wrangler secret put GRAPH_CLIENT_SECRET [--env staging]`.
-	"vars": { "SITE_INDEXABLE": "false" },
+	"vars": { "SITE_INDEXABLE": "false", "SMTP_HOST": "smtp.office365.com", "SMTP_PORT": "587" },
 	// General maintenance cron: scheduled publishing and housekeeping. Required.
 	"triggers": { "crons": ["* * * * *"] },
 	// No Smart Placement: it forwards every request - cache hits included - to the region it
@@ -51,7 +51,7 @@
 			],
 			"r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bima-cms-stg-media" }],
 			// Staging is never indexed.
-			"vars": { "SITE_INDEXABLE": "false" },
+			"vars": { "SITE_INDEXABLE": "false", "SMTP_HOST": "smtp.office365.com", "SMTP_PORT": "587" },
 			"kv_namespaces": [
 				{ "binding": "CACHE", "id": "ff5b6d8a31034f4a8dcb320394f84735" },
 				// Astro sessions; created by wrangler's auto-provisioning on the first deploy.

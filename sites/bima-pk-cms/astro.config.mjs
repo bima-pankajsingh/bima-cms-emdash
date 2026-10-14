@@ -27,7 +27,9 @@ export default defineConfig({
 			// Credentials are Worker vars/secret - see src/plugins/graph-email.ts.
 			plugins: [
 				graphEmail(
-					{ from: { email: "no-reply@milvik.se", name: "BIMA CMS" } },
+					// SMTP as the shared mailbox (SMTP_USER/SMTP_PASSWORD secrets). Switch to
+					// { transport: "graph", from: "no-reply@milvik.se" } once an Entra app exists.
+					{ transport: "smtp", fromName: "BIMA CMS" },
 					fileURLToPath(new URL("./src/plugins/graph-email.ts", import.meta.url)),
 				),
 			],

@@ -1,4 +1,14 @@
 /**
+ * Microsoft 365 email provider for EmDash - Graph or SMTP.
+ *
+ * transport "smtp" (in use): submission to smtp.office365.com:587 with STARTTLS and the shared
+ * mailbox's own credentials, through src/plugins/smtp-socket.ts. Messages are sent AS that
+ * mailbox - Microsoft 365 rejects any other From unless the mailbox has send-as rights.
+ *   SMTP_HOST, SMTP_PORT                  wrangler vars
+ *   SMTP_USER, SMTP_PASSWORD              wrangler secrets
+ *
+ * transport "graph": the original design below, for when an Entra app exists.
+ *
  * Microsoft Graph email provider for EmDash: magic links, invites and account recovery sent
  * from a Microsoft 365 mailbox (no-reply@milvik.se) with Graph `sendMail`, over HTTPS.
  *
@@ -18,8 +28,12 @@ import { definePlugin } from "emdash";
 import type { EmailDeliverEvent } from "emdash/plugin";
 
 export interface GraphEmailConfig {
-	/** The mailbox Graph sends as. Must exist in the tenant (a shared mailbox is fine). */
-	from: string | { email: string; name?: string };
+	/** "smtp" sends as SMTP_USER; "graph" (default) as `from`. */
+	transport?: "graph" | "smtp";
+	/** Display name for the From header in either mode. */
+	fromName?: string;
+	/** The mailbox Graph sends as. Must exist in the tenant (a shared mailbox is fine). Not used for smtp. */
+	from?: string | { email: string; name?: string };
 	/** Where replies go; the no-reply mailbox is not read. A message's own replyTo wins. */
 	replyTo?: string;
 }
@@ -73,7 +87,22 @@ const address = (email: string) => ({ emailAddress: { address: email } });
 
 /** @internal exported for tests */
 export function createGraphEmailDeliver(config: GraphEmailConfig, getEnv: () => Promise<Env> = loadEnv) {
-	const from = typeof config.from === "string" ? { email: config.from } : config.from;
+	if (config.transport === "smtp") {
+		return async (event: EmailDeliverEvent, ctx: { log: { info: (m: string, d?: unknown) => void } }) => {
+			const env = await getEnv();
+			const { sendSmtp } = await import("./smtp-socket");
+			const user = required(env, "SMTP_USER");
+			const { message } = event;
+			await sendSmtp(
+				{ host: required(env, "SMTP_HOST"), port: Number(required(env, "SMTP_PORT")), user, password: required(env, "SMTP_PASSWORD") },
+				{ from: { email: user, name: config.fromName }, to: message.to, cc: message.cc,
+				  replyTo: message.replyTo ?? config.replyTo, subject: message.subject, text: message.text, html: message.html },
+			);
+			ctx.log.info("email delivered via SMTP", { to: message.to, subject: message.subject });
+		};
+	}
+	const configured = config.from ?? "";
+	const from = typeof configured === "string" ? { email: configured, name: config.fromName } : configured;
 	return async (event: EmailDeliverEvent, ctx: { log: { info: (m: string, d?: unknown) => void } }) => {
 		const env = await getEnv();
 		const token = await accessToken(required(env, "GRAPH_TENANT_ID"), required(env, "GRAPH_CLIENT_ID"),
@@ -108,6 +137,7 @@ export function createGraphEmailDeliver(config: GraphEmailConfig, getEnv: () => 
 }
 
 function assertFrom(config: GraphEmailConfig) {
+	if (config.transport === "smtp") return;
 	const email = typeof config.from === "string" ? config.from : config.from?.email;
 	if (!email || !email.includes("@")) throw new Error('[graph-email] config.from is required, e.g. { from: "no-reply@milvik.se" }');
 }
@@ -119,7 +149,9 @@ export function createPlugin(config: GraphEmailConfig) {
 		id: "microsoft-graph-email",
 		version: "1.0.0",
 		capabilities: ["hooks.email-transport:register"],
-		hooks: { "email:deliver": { exclusive: true, handler: createGraphEmailDeliver(config) } },
+		// 20 s, not EmDash's 5 s default: an SMTP submission to Office 365 is a TCP connect, a TLS
+		// upgrade, a login and a DATA exchange, and the first of those can take seconds on its own.
+		hooks: { "email:deliver": { exclusive: true, timeout: 20_000, handler: createGraphEmailDeliver(config) } },
 	});
 }
 
