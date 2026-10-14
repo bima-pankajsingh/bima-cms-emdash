@@ -27,6 +27,10 @@
 	// "worker_loaders": [{ "binding": "LOADER" }],
 	// Search engines may index the documents only once this is "true" - set it at release, when
 	// the wording is final. Until then every host is noindex, production included.
+	// Email (magic links, invites, recovery) via Microsoft Graph as no-reply@milvik.se - see
+	// src/plugins/graph-email.ts. Add GRAPH_TENANT_ID and GRAPH_CLIENT_ID to "vars" (here and in
+	// env.staging) once the Entra app exists; the secret is never in this file:
+	// `wrangler secret put GRAPH_CLIENT_SECRET [--env staging]`.
 	"vars": { "SITE_INDEXABLE": "false" },
 	// General maintenance cron: scheduled publishing and housekeeping. Required.
 	"triggers": { "crons": ["* * * * *"] },
