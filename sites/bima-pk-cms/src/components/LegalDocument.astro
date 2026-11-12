@@ -7,15 +7,19 @@ interface Props {
 	locale: Locale;
 	doc: string;
 	page: LegalPage;
+	/** URL path under the market, when it is not the document key itself (product terms). */
+	path?: string;
+	/** Whether this is a consent document, which shows its version and effective date. */
+	consent?: boolean;
 }
 
-const { locale, doc, page } = Astro.props;
+const { locale, doc, page, path = doc, consent } = Astro.props;
 const data = page.entry.data;
 const market = Astro.params.market;
 const alternate = locale === "ur"
-	? { href: `/${market}/${doc}`, lang: "en" as const }
-	: { href: `/ur/${market}/${doc}`, lang: "ur" as const };
-const isConsentDocument = DOCUMENTS[doc].type !== "ABOUT_US";
+	? { href: `/${market}/${path}`, lang: "en" as const }
+	: { href: `/ur/${market}/${path}`, lang: "ur" as const };
+const isConsentDocument = consent ?? DOCUMENTS[doc]?.type !== "ABOUT_US";
 const { html, toc } = renderBody(data.body);
 const showToc = toc.length >= 3;
 const effective = data.effective_from

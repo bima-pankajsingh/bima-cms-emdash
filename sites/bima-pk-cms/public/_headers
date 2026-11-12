@@ -1,5 +1,12 @@
 # Fonts and the vendored brand assets never change in place: a new version gets a new path.
+# Fonts and brand assets also load cross-origin: the member policy document is HTML the app
+# renders from a string (no origin of its own), and a web view refuses a cross-origin font
+# without Access-Control-Allow-Origin. Public, credential-free files, so "*" is safe.
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
+/brand/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *

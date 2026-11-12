@@ -1,0 +1,11 @@
+---
+import LegalDocument from "../../../components/LegalDocument.astro";
+import { findPolicyTermsPage } from "../../../lib/policyTerms";
+
+const { market = "", key = "" } = Astro.params;
+const page = await findPolicyTermsPage(market, key, "en");
+if (!page) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) for (const hint of page.cacheHints) Astro.cache.set(hint as any);
+---
+
+<LegalDocument locale="en" doc="policy-terms" path={`policy-terms/${key}`} consent={false} page={page} />
