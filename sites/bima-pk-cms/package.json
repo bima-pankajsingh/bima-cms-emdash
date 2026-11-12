@@ -17,18 +17,18 @@
   "dependencies": {
     "@astrojs/cloudflare": "14.3.4",
     "@astrojs/react": "7.0.1",
-    "@emdash-cms/cloudflare": "1.2.0",
+    "@emdash-cms/cloudflare": "1.5.0",
     "astro": "7.3.8",
-    "emdash": "1.2.0",
+    "emdash": "1.5.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "@cloudflare/kumo": "2.6.0",
+    "@cloudflare/kumo": "2.15.0",
     "@phosphor-icons/react": "^2.1.10",
     "kysely": "^0.29.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@cloudflare/workers-types": "^5.20260820.1",
-    "wrangler": "^4.125.0"
+    "wrangler": "4.161.0"
   }
 }
