@@ -12,7 +12,7 @@
     "preview": "astro preview",
     "deploy": "astro build && wrangler deploy",
     "typecheck": "astro check",
-    "deploy:staging": "astro build && wrangler deploy --env staging"
+    "deploy:staging": "CLOUDFLARE_ENV=staging astro build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.3.4",
