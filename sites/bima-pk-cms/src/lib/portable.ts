@@ -3,7 +3,7 @@
  * so the page can carry a contents list and each section can be linked to.
  *
  * EmDash's own <PortableText> renders the same blocks but gives headings no ids. The document
- * set is small and fixed (paragraphs, headings, quotes, nested lists, a few marks, links), so
+ * set is small and fixed (paragraphs, headings, quotes, nested lists, tables, a few marks, links), so
  * this covers it directly. Every piece of text is escaped; only http(s), mailto, tel, relative
  * and in-page links are emitted.
  */
@@ -67,6 +67,30 @@ function inline(block: any): string {
 	return out;
 }
 
+/**
+ * A table block, as EmDash's Markdown import writes it: rows of cells, each cell a run of spans
+ * with its own markDefs. Product terms carry their pricing and benefit tables this way, and
+ * skipping the block (as this renderer did until 13 Nov 2026) dropped them from the page.
+ * Wrapped so a wide table scrolls on its own instead of widening the page.
+ */
+function table(block: any): string {
+	const rows: any[] = Array.isArray(block.rows) ? block.rows : [];
+	if (!rows.length) return "";
+	let out = '<div class="table-scroll"><table>';
+	rows.forEach((row: any, index: number) => {
+		const cells: any[] = Array.isArray(row?.cells) ? row.cells : [];
+		const header = (block.hasHeaderRow && index === 0) || cells.every((c: any) => c?.isHeader === true);
+		out += "<tr>";
+		for (const cell of cells) {
+			const tag = header || cell?.isHeader ? "th" : "td";
+			const scope = tag === "th" ? ' scope="col"' : "";
+			out += `<${tag}${scope}>${inline({ children: cell?.content ?? [], markDefs: cell?.markDefs ?? [] })}</${tag}>`;
+		}
+		out += "</tr>";
+	});
+	return out + "</table></div>";
+}
+
 export function renderBody(blocks: unknown): { html: string; toc: TocItem[] } {
 	if (!Array.isArray(blocks)) return { html: "", toc: [] };
 	const used = new Set<string>();
@@ -80,6 +104,11 @@ export function renderBody(blocks: unknown): { html: string; toc: TocItem[] } {
 	};
 
 	for (const block of blocks as any[]) {
+		if (block?._type === "table") {
+			closeLists();
+			html += table(block);
+			continue;
+		}
 		if (block?._type !== "block") continue;
 		const content = inline(block);
 		if (block.listItem) {

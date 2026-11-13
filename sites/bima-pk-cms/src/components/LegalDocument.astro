@@ -263,6 +263,11 @@ const t = locale === "ur"
 		line-height: 1.65;
 	}
 	.prose :global(blockquote p) { margin: 0; }
+	.prose :global(.table-scroll) { overflow-x: auto; margin: 0 0 1.5em; border: 1px solid var(--rule); border-radius: 0.875rem; }
+	.prose :global(table) { width: 100%; border-collapse: collapse; font-size: 0.9375rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+	.prose :global(th), .prose :global(td) { padding: 0.625rem 0.875rem; text-align: start; vertical-align: top; border-bottom: 1px solid var(--rule); }
+	.prose :global(th) { background: var(--mist); color: var(--navy); font-weight: 700; }
+	.prose :global(tr:last-child td) { border-bottom: 0; }
 	.prose :global(code) { font-size: 0.9em; background: var(--mist); padding: 0.1em 0.35em; border-radius: 0.35em; }
 	.prose :global(.legal-flag) {
 		display: inline-block;
@@ -291,5 +296,8 @@ const t = locale === "ur"
 		.prose :global(blockquote) { border: 1px solid #999; background: none; color: #000; }
 		.prose :global(.legal-flag) { background: none; border-color: #000; color: #000; }
 		.prose :global(li), .prose :global(p) { break-inside: avoid; }
+		.prose :global(.table-scroll) { overflow: visible; border-color: #999; }
+		.prose :global(th) { background: none; color: #000; }
+		.prose :global(tr) { break-inside: avoid; }
 	}
 </style>
